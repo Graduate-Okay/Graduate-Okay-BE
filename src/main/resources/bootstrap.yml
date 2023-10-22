@@ -1,0 +1,8 @@
+aws:
+  secretsmanager:
+    name: graduateokv2
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
