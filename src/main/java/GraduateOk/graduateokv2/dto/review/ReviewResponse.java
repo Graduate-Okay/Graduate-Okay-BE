@@ -5,8 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
-import java.util.List;
-
 @UtilityClass
 public class ReviewResponse {
 
@@ -49,19 +47,5 @@ public class ReviewResponse {
                     .starScore(review.getStarScore())
                     .build();
         }
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Summary {
-
-        List<Long> reviewIdList;
-        
-        Integer totalCount; // 총 리뷰 개수
-        
-        Double avgStarScore; // 리뷰 평점
     }
 }

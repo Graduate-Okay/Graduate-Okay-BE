@@ -5,6 +5,7 @@ import GraduateOk.graduateokv2.domain.Subject;
 import GraduateOk.graduateokv2.domain.User;
 import GraduateOk.graduateokv2.dto.review.ReviewRequest;
 import GraduateOk.graduateokv2.dto.review.ReviewResponse;
+import GraduateOk.graduateokv2.dto.subject.SubjectResponse;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
 import GraduateOk.graduateokv2.repository.ReviewRepository;
@@ -78,13 +79,13 @@ public class ReviewService {
      * 리뷰 요약 정보 조회 (인기 교양 과목 상세 조회 시 보여줄 리뷰 요약 정보)
      */
     @Transactional(readOnly = true)
-    public ReviewResponse.Summary getReviewSummary(Long subjectId) {
+    public SubjectResponse.ReviewSummary getReviewSummary(Long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_SUBJECT));
 
         List<Review> reviewList = subject.getReviewList();
 
-        return ReviewResponse.Summary.builder()
+        return SubjectResponse.ReviewSummary.builder()
                 .reviewIdList(reviewList.stream().map(Review::getId).collect(Collectors.toList()))
                 .totalCount(reviewList.size())
                 .avgStarScore(reviewList.stream().mapToDouble(Review::getStarScore).average().orElse(0.0))
