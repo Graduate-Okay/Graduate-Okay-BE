@@ -30,4 +30,10 @@ public class Review extends BaseTimeEntity {
     String content;
 
     Float starScore;
+
+    Boolean isDeleted;
+
+    public void deleteReview() {
+        this.isDeleted = true;
+    }
 }
