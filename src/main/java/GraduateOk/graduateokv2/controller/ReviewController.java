@@ -4,6 +4,7 @@ import GraduateOk.graduateokv2.dto.review.ReviewRequest;
 import GraduateOk.graduateokv2.dto.review.ReviewResponse;
 import GraduateOk.graduateokv2.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,8 +22,8 @@ public class ReviewController {
      * todo: 권한 추가
      */
     @PostMapping("")
-    public ReviewResponse.Register registerReview(@Valid @RequestBody ReviewRequest.Register request) {
-        return reviewService.registerReview(request);
+    public ResponseEntity<ReviewResponse.Register> registerReview(@Valid @RequestBody ReviewRequest.Register request) {
+        return ResponseEntity.ok(reviewService.registerReview(request));
     }
 
     /**
@@ -31,8 +32,8 @@ public class ReviewController {
      * todo: 권한 추가
      */
     @GetMapping("/{id}")
-    public ReviewResponse.Detail getReviewDetail(@PathVariable("id") Long id) {
-        return reviewService.getReviewDetail(id);
+    public ResponseEntity<ReviewResponse.Detail> getReviewDetail(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(reviewService.getReviewDetail(id));
     }
 
     /**
@@ -41,7 +42,8 @@ public class ReviewController {
      * todo: 권한 추가
      */
     @DeleteMapping("/{id}")
-    public void deleteReview(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteReview(@PathVariable("id") Long id) {
         reviewService.deleteReview(id);
+        return ResponseEntity.ok(id + "번 리뷰 삭제 완료");
     }
 }
