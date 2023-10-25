@@ -10,6 +10,9 @@ public enum Error {
 
     // 400 BAD_REQUEST 잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "400", "잘못된 요청입니다."),
+    BAD_PASSWORD(HttpStatus.BAD_REQUEST, "400_PW", "비밀번호는 8자 이상이어야 합니다."),
+    BAD_EMAIL(HttpStatus.BAD_REQUEST, "400_EMAIL", "한신대학교 이메일이어야 합니다."),
+    BAD_AUTH_NUMBER(HttpStatus.BAD_REQUEST, "400_AUTH", "잘못된 인증번호입니다."),
 
     // 401 UNAUTHORIZED 권한없음(인증 실패)
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "권한 인증에 실패했습니다."),

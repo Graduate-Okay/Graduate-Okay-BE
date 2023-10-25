@@ -25,6 +25,24 @@ public class User extends BaseTimeEntity {
 
     String nickname;
 
+    String jwt; // jwt refresh token
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviewList = new ArrayList<>();
+
+    public void changeJwt(String jwt) {
+        this.jwt = jwt;
+    }
+
+    public void setJwtNull() {
+        this.jwt = null;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

@@ -40,6 +40,7 @@ public class ReviewController {
      * NAME : 리뷰 삭제
      * DATE : 2023-10-23
      * todo: 권한 추가
+     * todo: response 수정
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteReview(@PathVariable("id") Long id) {
