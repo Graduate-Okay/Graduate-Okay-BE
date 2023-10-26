@@ -74,7 +74,7 @@ public class UserService {
     /**
      * 이메일 인증번호 발송
      */
-    public String sendEmail(UserRequest.Email request) {
+    public void sendEmail(UserRequest.Email request) {
         String email = request.getEmail();
 
         // 이메일 중복 확인
@@ -103,8 +103,6 @@ public class UserService {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-
-        return "[" + email + "] 이메일 발송 완료";
     }
 
     /**
@@ -124,7 +122,7 @@ public class UserService {
     /**
      * 이메일 인증번호 검증
      */
-    public String verifyEmail(String number) {
+    public void verifyEmail(String number) {
         String email = redisUtil.getData(number);
 
         if (email == null) {
@@ -132,8 +130,6 @@ public class UserService {
         }
 
         redisUtil.deleteData(number);
-
-        return "[" + email + "] 이메일 검증 완료";
     }
 
     /**
@@ -163,13 +159,11 @@ public class UserService {
      * 로그아웃
      */
     @Transactional
-    public String logout() {
+    public void logout() {
         Long userId = loginService.getLoginUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
         user.setJwtNull();
-
-        return userId + "번 회원 로그아웃";
     }
 
     /**
@@ -215,7 +209,7 @@ public class UserService {
      * 회원 탈퇴
      */
     @Transactional
-    public String withdraw() {
+    public void withdraw() {
         Long userId = loginService.getLoginUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
@@ -226,7 +220,5 @@ public class UserService {
 
         // 회원 삭제
         userRepository.delete(user);
-
-        return userId + "번 회원 탈퇴 완료";
     }
 }

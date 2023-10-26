@@ -1,10 +1,11 @@
 package GraduateOk.graduateokv2.controller;
 
+import GraduateOk.graduateokv2.dto.common.BaseResponse;
 import GraduateOk.graduateokv2.dto.user.UserRequest;
 import GraduateOk.graduateokv2.dto.user.UserResponse;
 import GraduateOk.graduateokv2.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,28 +23,28 @@ public class UserController {
      * DATE : 2023-10-25
      */
     @PostMapping("/join")
-    public ResponseEntity<UserResponse.Join> join(@Valid @RequestBody UserRequest.Join request) {
-        return ResponseEntity.ok(userService.join(request));
+    public BaseResponse<UserResponse.Join> join(@Valid @RequestBody UserRequest.Join request) {
+        return BaseResponse.ok(HttpStatus.CREATED, userService.join(request));
     }
 
     /**
      * NAME : 이메일 인증번호 발송
      * DATE : 2023-10-25
-     * todo: response 수정
      */
     @PostMapping("/email")
-    public ResponseEntity<String> sendEmail(@Valid @RequestBody UserRequest.Email request) {
-        return ResponseEntity.ok(userService.sendEmail(request));
+    public BaseResponse<?> sendEmail(@Valid @RequestBody UserRequest.Email request) {
+        userService.sendEmail(request);
+        return BaseResponse.ok(HttpStatus.OK);
     }
 
     /**
      * NAME : 이메일 인증번호 검증
      * DATE : 2023-10-25
-     * todo: response 수정
      */
     @GetMapping("/email")
-    public ResponseEntity<String> verifyEmail(@RequestParam String number) {
-        return ResponseEntity.ok(userService.verifyEmail(number));
+    public BaseResponse<?> verifyEmail(@RequestParam String number) {
+        userService.verifyEmail(number);
+        return BaseResponse.ok(HttpStatus.OK);
     }
 
     /**
@@ -51,19 +52,19 @@ public class UserController {
      * DATE : 2023-10-25
      */
     @PostMapping("/login")
-    public ResponseEntity<UserResponse.Login> login(@Valid @RequestBody UserRequest.Login request) {
-        return ResponseEntity.ok(userService.login(request));
+    public BaseResponse<UserResponse.Login> login(@Valid @RequestBody UserRequest.Login request) {
+        return BaseResponse.ok(HttpStatus.OK, userService.login(request));
     }
 
     /**
      * NAME : 로그아웃
      * DATE : 2023-10-25
-     * todo: response 수정
      */
     @PostMapping("/logout")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<String> logout() {
-        return ResponseEntity.ok(userService.logout());
+    public BaseResponse<?> logout() {
+        userService.logout();
+        return BaseResponse.ok(HttpStatus.OK);
     }
 
     /**
@@ -72,8 +73,8 @@ public class UserController {
      */
     @GetMapping("/info")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserResponse.Info> getUserInfo() {
-        return ResponseEntity.ok(userService.getUserInfo());
+    public BaseResponse<UserResponse.Info> getUserInfo() {
+        return BaseResponse.ok(HttpStatus.OK, userService.getUserInfo());
     }
 
     /**
@@ -82,18 +83,18 @@ public class UserController {
      */
     @PatchMapping("/info")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserResponse.UpdateInfo> updateUserInfo(@Valid @RequestBody UserRequest.Update request) {
-        return ResponseEntity.ok(userService.updateUserInfo(request));
+    public BaseResponse<UserResponse.UpdateInfo> updateUserInfo(@Valid @RequestBody UserRequest.Update request) {
+        return BaseResponse.ok(HttpStatus.OK, userService.updateUserInfo(request));
     }
 
     /**
      * NAME : 회원 탈퇴
      * DATE : 2023-10-25
-     * todo: response 수정
      */
     @PostMapping("/withdrawal")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<String> withdraw() {
-        return ResponseEntity.ok(userService.withdraw());
+    public BaseResponse<?> withdraw() {
+        userService.withdraw();
+        return BaseResponse.ok(HttpStatus.OK);
     }
 }
