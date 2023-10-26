@@ -34,6 +34,7 @@ public enum Error {
 
     // 409 CONFLICT 중복된 리소스
     ALREADY_SAVED_EMAIL(HttpStatus.CONFLICT, "409_EMAIL", "이미 가입된 이메일입니다."),
+    ALREADY_SAVED_LOGIN_ID(HttpStatus.CONFLICT, "409_ID", "이미 가입된 아이디입니다."),
 
     // 500 INTERNAL_SERVER_ERROR 서버 내부 에러
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "서버 내부 에러입니다.");

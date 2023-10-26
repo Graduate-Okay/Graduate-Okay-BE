@@ -2,6 +2,7 @@ package GraduateOk.graduateokv2.dto.user;
 
 import GraduateOk.graduateokv2.domain.Review;
 import GraduateOk.graduateokv2.domain.User;
+import GraduateOk.graduateokv2.dto.common.TokenResponse;
 import GraduateOk.graduateokv2.dto.review.ReviewResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,19 +14,6 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class UserResponse {
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Token {
-
-        String tokenType; // Bearer
-
-        String accessToken;
-
-        String refreshToken;
-    }
 
     @Getter
     @Builder
@@ -48,7 +36,7 @@ public class UserResponse {
 
         String nickname;
 
-        UserResponse.Token tokenInfo;
+        TokenResponse tokenInfo;
     }
 
     @Getter

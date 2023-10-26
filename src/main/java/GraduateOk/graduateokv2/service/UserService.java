@@ -2,6 +2,7 @@ package GraduateOk.graduateokv2.service;
 
 import GraduateOk.graduateokv2.domain.Review;
 import GraduateOk.graduateokv2.domain.User;
+import GraduateOk.graduateokv2.dto.common.TokenResponse;
 import GraduateOk.graduateokv2.dto.user.UserRequest;
 import GraduateOk.graduateokv2.dto.user.UserResponse;
 import GraduateOk.graduateokv2.exception.CustomException;
@@ -146,7 +147,7 @@ public class UserService {
             throw new CustomException(Error.INVALID_PASSWORD);
         }
 
-        UserResponse.Token tokenInfo = jwtProvider.generateToken(user);
+        TokenResponse tokenInfo = jwtProvider.generateToken(user.getId(), "ROLE_USER");
         user.changeJwt(tokenInfo.getRefreshToken());
 
         return UserResponse.Login.builder()
@@ -165,7 +166,7 @@ public class UserService {
         Long userId = loginService.getLoginUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
-        user.setJwtNull();
+        user.changeJwt(null);
     }
 
     /**

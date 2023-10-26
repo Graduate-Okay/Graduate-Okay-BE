@@ -23,4 +23,14 @@ public class Admin extends BaseTimeEntity {
     String loginId;
 
     String password;
+
+    String jwt; // jwt refresh token
+
+    public void changeJwt(String jwt) {
+        this.jwt = jwt;
+    }
+
+    public void changePassword(String password) {
+        this.password = password;
+    }
 }

@@ -34,10 +34,6 @@ public class User extends BaseTimeEntity {
         this.jwt = jwt;
     }
 
-    public void setJwtNull() {
-        this.jwt = null;
-    }
-
     public void changePassword(String password) {
         this.password = password;
     }

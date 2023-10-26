@@ -1,6 +1,6 @@
 package GraduateOk.graduateokv2.security;
 
-import GraduateOk.graduateokv2.dto.user.UserResponse;
+import GraduateOk.graduateokv2.dto.common.TokenResponse;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
 import io.jsonwebtoken.Claims;
@@ -36,23 +36,23 @@ public class JwtProvider {
     }
 
     // 토큰 발급
-    public UserResponse.Token generateToken(GraduateOk.graduateokv2.domain.User user) {
+    public TokenResponse generateToken(Long id, String role) {
         long now = new Date().getTime();
 
         String accessToken = Jwts.builder()
-                .setSubject(user.getId().toString())
-                .claim(AUTHORITY_KEY, "ROLE_USER") // 정보 저장
+                .setSubject(id.toString())
+                .claim(AUTHORITY_KEY, role) // 정보 저장
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME_MILLIS))
                 .compact();
 
         String refreshToken = Jwts.builder()
-                .setSubject(user.getId().toString())
+                .setSubject(id.toString())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME_MILLIS))
                 .compact();
 
-        return UserResponse.Token.builder()
+        return TokenResponse.builder()
                 .tokenType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
