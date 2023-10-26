@@ -14,7 +14,6 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/review")
-@PreAuthorize("isAuthenticated()")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -24,6 +23,7 @@ public class ReviewController {
      * DATE : 2023-10-23
      */
     @PostMapping("")
+    @PreAuthorize("hasRole('USER')")
     public BaseResponse<ReviewResponse.Register> registerReview(@Valid @RequestBody ReviewRequest.Register request) {
         return BaseResponse.ok(HttpStatus.OK, reviewService.registerReview(request));
     }
@@ -33,17 +33,24 @@ public class ReviewController {
      * DATE : 2023-10-23
      */
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public BaseResponse<ReviewResponse.Detail> getReviewDetail(@PathVariable("id") Long id) {
         return BaseResponse.ok(HttpStatus.OK, reviewService.getReviewDetail(id));
     }
 
     /**
-     * NAME : 리뷰 삭제
+     * NAME : 리뷰 삭제 (사용자)
      * DATE : 2023-10-23
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     public BaseResponse<?> deleteReview(@PathVariable("id") Long id) {
         reviewService.deleteReview(id);
         return BaseResponse.ok(HttpStatus.OK);
     }
+
+    /**
+     * NAME : 리뷰 삭제 (관리자)
+     * DATE : 2023-10-23
+     */
 }

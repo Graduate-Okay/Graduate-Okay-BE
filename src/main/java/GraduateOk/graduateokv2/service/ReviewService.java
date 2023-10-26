@@ -25,11 +25,12 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
     private final SubjectRepository subjectRepository;
+    private final LoginService loginService;
 
     @Transactional
     public ReviewResponse.Register registerReview(ReviewRequest.Register request) {
-        // todo: 로그인한 회원 아이디
-        User user = userRepository.findById(1L) // todo: 1L 임시
+        Long userId = loginService.getLoginUserId();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
 
         Subject subject = subjectRepository.findById(request.getSubjectId())
@@ -43,7 +44,6 @@ public class ReviewService {
                 .starScore(request.getStarScore())
                 .isDeleted(false)
                 .build();
-
         reviewRepository.save(review);
 
         return ReviewResponse.Register.builder().id(review.getId()).build();
@@ -59,8 +59,8 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(Long id) {
-        // todo: 로그인한 회원 아이디
-        User user = userRepository.findById(1L) // todo: 1L 임시
+        Long userId = loginService.getLoginUserId();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
 
         Review review = reviewRepository.findById(id)

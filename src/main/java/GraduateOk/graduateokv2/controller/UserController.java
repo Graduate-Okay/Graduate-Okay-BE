@@ -91,7 +91,7 @@ public class UserController {
      * NAME : 회원 탈퇴
      * DATE : 2023-10-25
      */
-    @PostMapping("/withdrawal")
+    @DeleteMapping("/withdrawal")
     @PreAuthorize("hasRole('USER')")
     public BaseResponse<?> withdraw() {
         userService.withdraw();
