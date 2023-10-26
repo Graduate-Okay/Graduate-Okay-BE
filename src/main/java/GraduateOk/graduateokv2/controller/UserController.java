@@ -23,7 +23,7 @@ public class UserController {
      * DATE : 2023-10-25
      */
     @PostMapping("/join")
-    public BaseResponse<UserResponse.Join> join(@Valid @RequestBody UserRequest.Join request) {
+    public BaseResponse<UserResponse.Join> join(@Valid @RequestBody UserRequest.Basic request) {
         return BaseResponse.ok(HttpStatus.CREATED, userService.join(request));
     }
 
@@ -52,7 +52,7 @@ public class UserController {
      * DATE : 2023-10-25
      */
     @PostMapping("/login")
-    public BaseResponse<UserResponse.Login> login(@Valid @RequestBody UserRequest.Login request) {
+    public BaseResponse<UserResponse.Login> login(@Valid @RequestBody UserRequest.Basic request) {
         return BaseResponse.ok(HttpStatus.OK, userService.login(request));
     }
 

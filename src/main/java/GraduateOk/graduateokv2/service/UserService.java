@@ -40,7 +40,7 @@ public class UserService {
      * 회원가입
      */
     @Transactional
-    public UserResponse.Join join(UserRequest.Join request) {
+    public UserResponse.Join join(UserRequest.Basic request) {
         // 이메일 중복 확인
         checkEmail(request.getEmail());
 
@@ -55,9 +55,11 @@ public class UserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(encPassword)
-                .nickname(request.getNickname())
                 .build();
         userRepository.save(user);
+
+        // 닉네임 세팅
+        user.changeNickname("사용자" + user.getId());
 
         return UserResponse.Join.builder().id(user.getId()).build();
     }
@@ -136,7 +138,7 @@ public class UserService {
      * 로그인
      */
     @Transactional
-    public UserResponse.Login login(UserRequest.Login request) {
+    public UserResponse.Login login(UserRequest.Basic request) {
         User user = userRepository.getUserByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
 

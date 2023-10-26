@@ -16,7 +16,7 @@ public class UserRequest {
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Join {
+    public static class Basic {
 
         @javax.validation.constraints.Email
         @NotNull
@@ -24,9 +24,6 @@ public class UserRequest {
 
         @NotNull
         String password;
-
-        @NotNull
-        String nickname;
     }
 
     @Getter
@@ -38,20 +35,6 @@ public class UserRequest {
         @javax.validation.constraints.Email
         @NotNull
         String email;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Login {
-
-        @javax.validation.constraints.Email
-        @NotNull
-        String email;
-
-        @NotNull
-        String password;
     }
 
     @Getter
