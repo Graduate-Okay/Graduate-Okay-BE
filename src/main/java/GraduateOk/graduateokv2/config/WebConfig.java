@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         WebMvcConfigurer.super.addCorsMappings(registry);
         registry.addMapping("/**")
-                .allowedOrigins("https://graduate-okay.netlify.app/")
+                .allowedOrigins("https://graduate-okay.netlify.app/", "http://localhost:3000")
                 .allowedMethods("GET", "POST", "PATCH", "DELETE")
                 .maxAge(3000);
     }
