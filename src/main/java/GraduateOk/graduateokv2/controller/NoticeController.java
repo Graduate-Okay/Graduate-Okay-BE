@@ -36,7 +36,7 @@ public class NoticeController {
      * DATE : 2023-10-17
      */
     @GetMapping("/{id}")
-    public BaseResponse<NoticeResponse.Detail> getNoticeDetail(@PathVariable("id") Long id) {
+    public BaseResponse<NoticeResponse.Brief> getNoticeDetail(@PathVariable("id") Long id) {
         return BaseResponse.ok(HttpStatus.OK, noticeService.getNoticeDetail(id));
     }
 

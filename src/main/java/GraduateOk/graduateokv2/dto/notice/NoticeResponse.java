@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Page;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,8 @@ public class NoticeResponse {
 
         String content;
 
+        String createdAt;
+
         public static List<Brief> of(List<Notice> noticeList) {
             return noticeList.stream()
                     .map(Brief::of)
@@ -36,6 +39,7 @@ public class NoticeResponse {
                     .id(notice.getId())
                     .title(notice.getTitle())
                     .content(notice.getContent())
+                    .createdAt(notice.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                     .build();
         }
     }
@@ -60,22 +64,6 @@ public class NoticeResponse {
                     .noticeList(Brief.of(noticePage.getContent()))
                     .build();
         }
-    }
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Detail {
-
-        Long id;
-
-        String title;
-
-        String content;
-
-        String createdAt;
     }
 
     @Getter

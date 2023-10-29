@@ -31,11 +31,11 @@ public class NoticeService {
      * 공지사항 상세 조회
      */
     @Transactional(readOnly = true)
-    public NoticeResponse.Detail getNoticeDetail(Long id) {
+    public NoticeResponse.Brief getNoticeDetail(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_NOTICE));
 
-        return NoticeResponse.Detail.builder()
+        return NoticeResponse.Brief.builder()
                 .id(id)
                 .title(notice.getTitle())
                 .content(notice.getContent())
