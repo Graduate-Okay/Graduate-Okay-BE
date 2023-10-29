@@ -28,9 +28,11 @@ public class SubjectResponse {
 
         Boolean isRequired;
 
-        Integer credit; // 학점
+        Float credit; // 학점
 
-        String kySubjectType; // 교양 인재상/핵심역량
+        String kyModelType; // 교양 인재상
+
+        String kyCoreType; // 교양 핵심역량
 
         Integer kyCount; // 수강횟수
 
@@ -41,7 +43,8 @@ public class SubjectResponse {
                     .subName(subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
-                    .kySubjectType(subject.getKySubjectType().getDescription())
+                    .kyModelType(subject.getKyModelType().getDescription())
+                    .kyCoreType(subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
                     .build();
         }
@@ -85,7 +88,8 @@ public class SubjectResponse {
                     .subName(subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
-                    .kySubjectType(subject.getKySubjectType().getDescription())
+                    .kyModelType(subject.getKyModelType().getDescription())
+                    .kyCoreType(subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
                     .reviewSummary(reviewSummary)
                     .build();
@@ -104,5 +108,15 @@ public class SubjectResponse {
         Integer totalCount; // 총 리뷰 개수
 
         Double avgStarScore; // 리뷰 평점
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Store {
+
+        Integer totalCount; // 총 저장 개수
     }
 }

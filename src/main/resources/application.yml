@@ -1,3 +1,11 @@
+# h2 db
+#spring:
+#  datasource:
+#    url: jdbc:h2:tcp://localhost/~/graduateok2
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+
 spring:
   datasource:
     url: ${DB_URL}
@@ -14,7 +22,7 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
-
+#      hibernate.hbm2ddl.auto: create # h2
   mail:
     host: smtp.gmail.com
     username: ${MAIL_USERNAME}

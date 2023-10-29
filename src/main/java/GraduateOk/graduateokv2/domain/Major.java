@@ -23,7 +23,9 @@ public class Major {
     @JoinColumn(name = "college_id")
     College college;
 
-    String name; // 전공 이름
+    String name; // 학과 이름
+
+    String code; // 학과 코드
 
     Integer minCredit; // 전공 최소 이수 학점
 

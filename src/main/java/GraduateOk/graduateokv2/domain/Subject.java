@@ -23,16 +23,23 @@ public class Subject extends BaseTimeEntity {
 
     String subName; // 교양 과목명 변경된 경우 이전 과목명 저장
 
+    String code; // 과목코드
+
     Boolean isRequired; // 필수 여부 (교필, 전필)
 
-    Integer credit; // 학점
+    Float credit; // 학점
 
     @Enumerated(EnumType.STRING)
-    SubjectType kySubjectType; // 교양 인재상/핵심역량
+    SubjectModelType kyModelType; // 교양 인재상
 
-    Integer kyCount; // 교양 수강횟수
+    @Enumerated(EnumType.STRING)
+    SubjectCoreType kyCoreType; // 교양 핵심역량
 
-    Boolean isDeleted; // 삭제 여부
+    @Builder.Default
+    Integer kyCount = 0; // 교양 수강횟수
+
+    @Builder.Default
+    Boolean isDeleted = false; // 삭제 여부
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "major_id")
@@ -40,4 +47,8 @@ public class Subject extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviewList = new ArrayList<>();
+
+    public void setSubName(String subName) {
+        this.subName = subName;
+    }
 }

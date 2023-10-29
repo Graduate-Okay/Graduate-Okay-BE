@@ -1,6 +1,7 @@
 package GraduateOk.graduateokv2.controller;
 
 import GraduateOk.graduateokv2.dto.common.BaseResponse;
+import GraduateOk.graduateokv2.dto.subject.SubjectRequest;
 import GraduateOk.graduateokv2.dto.subject.SubjectResponse;
 import GraduateOk.graduateokv2.service.SubjectService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,5 +44,15 @@ public class SubjectController {
     @PreAuthorize("isAuthenticated()")
     public BaseResponse<SubjectResponse.Detail> getSubjectDetail(@PathVariable("id") Long id) {
         return BaseResponse.ok(HttpStatus.OK, subjectService.getSubjectDetail(id));
+    }
+
+    /**
+     * NAME : 과목 데이터 DB에 저장
+     * DATE : 2023-10-27
+     */
+    @PostMapping("/store")
+//    @PreAuthorize("isAuthenticated()")
+    public BaseResponse<SubjectResponse.Store> storeSubjectData(@Valid @RequestBody SubjectRequest.Store request) {
+        return BaseResponse.ok(HttpStatus.OK, subjectService.storeSubjectData(request));
     }
 }
