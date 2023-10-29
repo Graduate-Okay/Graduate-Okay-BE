@@ -15,7 +15,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
             "(:keyword is null or (s.name like %:keyword% or s.subName like %:keyword%)) and " +
             "(:type is null or s.kyModelType = :type or s.kyCoreType = :type) and " +
             "(:credit is null or s.credit = :credit) and " +
-            "s.isDeleted = false and s.major.name = '교양'")
+            "s.isDeleted = false and s.classification = '교양선택'")
     Page<Subject> getSubjectRank(@Param("keyword") String keyword,
                                  @Param("type") String type,
                                  @Param("credit") Integer credit,

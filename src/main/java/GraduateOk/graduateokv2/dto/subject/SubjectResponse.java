@@ -43,8 +43,8 @@ public class SubjectResponse {
                     .subName(subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
-                    .kyModelType(subject.getKyModelType().getDescription())
-                    .kyCoreType(subject.getKyCoreType().getDescription())
+                    .kyModelType(subject.getKyModelType() == null ? null : subject.getKyModelType().getDescription())
+                    .kyCoreType(subject.getKyCoreType() == null ? null : subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
                     .build();
         }
