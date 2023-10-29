@@ -25,6 +25,8 @@ public class Subject extends BaseTimeEntity {
 
     String code; // 과목코드
 
+    String classification; // 이수 구분
+
     Boolean isRequired; // 필수 여부 (교필, 전필)
 
     Float credit; // 학점

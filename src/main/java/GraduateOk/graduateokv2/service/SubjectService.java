@@ -2,6 +2,7 @@ package GraduateOk.graduateokv2.service;
 
 import GraduateOk.graduateokv2.domain.Major;
 import GraduateOk.graduateokv2.domain.Subject;
+import GraduateOk.graduateokv2.domain.SubjectCoreType;
 import GraduateOk.graduateokv2.domain.SubjectModelType;
 import GraduateOk.graduateokv2.dto.subject.SubjectRequest;
 import GraduateOk.graduateokv2.dto.subject.SubjectResponse;
@@ -10,6 +11,7 @@ import GraduateOk.graduateokv2.exception.Error;
 import GraduateOk.graduateokv2.repository.MajorRepository;
 import GraduateOk.graduateokv2.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SubjectService {
@@ -59,6 +62,19 @@ public class SubjectService {
             });
 
             if (subject.isEmpty()) { // 과목이 저장 안 되어 있으면 새로 저장
+                // '전공선택'이나 '일반선택'이면 저장 안 함
+                String classification = data.getClassification();
+                if (classification.equals("전공선택")
+                        || classification.equals("일반선택")
+                        || classification.equals("공통선택")
+                        || classification.equals("학석연계")
+                        || classification.equals("평생교육")
+                        || classification.equals("복수선택")
+                        || classification.equals("연계전공")
+                        || classification.equals("교직")) {
+                    continue;
+                }
+
                 // 전공 없으면 새로 생성
                 String majorName = data.getMajor().strip();
                 String majorCode = code.substring(0, 2);
@@ -69,19 +85,28 @@ public class SubjectService {
                                 .build()));
 
                 // 인재상 있을 경우 enum으로 변경
-                SubjectModelType type = null;
+                SubjectModelType modelType = null;
+                SubjectCoreType coreType = null;
                 if (data.getKyType() != null && !data.getKyType().isEmpty()) {
-                    type = SubjectModelType.descriptionToSubjectModelType(data.getKyType());
+                    String kyType = data.getKyType();
+                    // 인재상, 핵심역량 구분
+                    if (kyType.contains("하는")) {
+                        modelType = SubjectModelType.descriptionToSubjectModelType(kyType);
+                    } else {
+                        coreType = SubjectCoreType.descriptionToSubjectCoreType(kyType);
+                    }
                 }
 
-                // 저장할 과목 생성
+                // 과목 저장
                 // json 데이터에는 인재상만 있어서 핵심역량은 엑셀표 기준으로 추가 저장 필요
                 Subject saveSubject = Subject.builder()
                         .name(data.getCourseName())
                         .code(code)
+                        .classification(classification)
                         .isRequired(data.getClassification().contains("필수"))
                         .credit(getCreditFromString(data.getCredit()))
-                        .kyModelType(type)
+                        .kyModelType(modelType)
+                        .kyCoreType(coreType)
                         .major(major)
                         .build();
                 subjectRepository.save(saveSubject);
