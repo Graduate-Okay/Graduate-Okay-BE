@@ -28,18 +28,26 @@ public class SubjectService {
     private final ReviewService reviewService;
     private final MajorRepository majorRepository;
 
+    /**
+     * 인기 교양 추천순 목록 조회
+     */
     @Transactional(readOnly = true)
-    public SubjectResponse.Rank getSubjectRank(String keyword, String type, Integer credit, Pageable pageable) {
-        Page<Subject> subjectList = subjectRepository.getSubjectRank(keyword, type, credit, pageable);
+    public SubjectResponse.Rank getSubjectRank(String searchWord, String type, Integer credit, Pageable pageable) {
+        Page<Subject> subjectList = subjectRepository.getSubjectRank(searchWord, type, credit, pageable);
         return SubjectResponse.Rank.of(subjectList);
     }
 
+    /**
+     * 인기 교양 상세 조회
+     */
     @Transactional(readOnly = true)
     public SubjectResponse.Detail getSubjectDetail(Long id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_SUBJECT));
         return SubjectResponse.Detail.of(subject, reviewService.getReviewSummary(id));
     }
+
+    /**------------------------------------------------------------------------------------------------------------*/
 
     /**
      * 과목 데이터(json) DB에 저장
@@ -62,7 +70,7 @@ public class SubjectService {
             });
 
             if (subject.isEmpty()) { // 과목이 저장 안 되어 있으면 새로 저장
-                // '전공선택'이나 '일반선택'이면 저장 안 함
+                // 교필, 교선, 전필 아니면 저장 안 함
                 String classification = data.getClassification();
                 if (classification.equals("전공선택")
                         || classification.equals("일반선택")
@@ -98,8 +106,8 @@ public class SubjectService {
                 }
 
                 // 과목 저장
-                // json 데이터에는 인재상만 있어서 핵심역량은 엑셀표 기준으로 추가 저장 필요
-                Subject saveSubject = Subject.builder()
+                // todo: json 데이터에는 인재상만 있어서 핵심역량은 엑셀표 기준으로 추가 저장 필요
+                subjectRepository.save(Subject.builder()
                         .name(data.getCourseName())
                         .code(code)
                         .classification(classification)
@@ -108,8 +116,8 @@ public class SubjectService {
                         .kyModelType(modelType)
                         .kyCoreType(coreType)
                         .major(major)
-                        .build();
-                subjectRepository.save(saveSubject);
+                        .build()
+                );
                 count++;
             }
         }
@@ -130,4 +138,10 @@ public class SubjectService {
             return Float.parseFloat(creditStr);
         }
     }
+
+    /**------------------------------------------------------------------------------------------------------------*/
+
+    /**
+     * 과목 관리
+     */
 }

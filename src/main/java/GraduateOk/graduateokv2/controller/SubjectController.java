@@ -27,13 +27,13 @@ public class SubjectController {
      * DATE : 2023-10-25
      */
     @GetMapping("")
-    public BaseResponse<SubjectResponse.Rank> getSubjectRank(@RequestParam(required = false) String keyword,
+    public BaseResponse<SubjectResponse.Rank> getSubjectRank(@RequestParam(required = false) String searchWord,
                                                              @RequestParam(required = false) String type,
                                                              @RequestParam(required = false) Integer credit,
                                                              @PageableDefault(size = 30, sort = "kyCount", direction = Sort.Direction.DESC)
                                                              Pageable pageable) {
 
-        return BaseResponse.ok(HttpStatus.OK, subjectService.getSubjectRank(keyword, type, credit, pageable));
+        return BaseResponse.ok(HttpStatus.OK, subjectService.getSubjectRank(searchWord, type, credit, pageable));
     }
 
     /**

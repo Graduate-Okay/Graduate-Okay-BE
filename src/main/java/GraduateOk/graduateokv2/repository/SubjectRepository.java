@@ -12,11 +12,11 @@ import java.util.Optional;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query("select s from Subject s where " +
-            "(:keyword is null or (s.name like %:keyword% or s.subName like %:keyword%)) and " +
+            "(:searchWord is null or (s.name like %:searchWord% or s.subName like %:searchWord%)) and " +
             "(:type is null or s.kyModelType = :type or s.kyCoreType = :type) and " +
             "(:credit is null or s.credit = :credit) and " +
             "s.isDeleted = false and s.classification = '교양선택'")
-    Page<Subject> getSubjectRank(@Param("keyword") String keyword,
+    Page<Subject> getSubjectRank(@Param("searchWord") String searchWord,
                                  @Param("type") String type,
                                  @Param("credit") Integer credit,
                                  Pageable pageable);

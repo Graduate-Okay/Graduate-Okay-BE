@@ -86,9 +86,9 @@ public class ReviewService {
         List<Review> reviewList = subject.getReviewList();
 
         return SubjectResponse.ReviewSummary.builder()
-                .reviewIdList(reviewList.stream().map(Review::getId).collect(Collectors.toList()))
                 .totalCount(reviewList.size())
                 .avgStarScore(reviewList.stream().mapToDouble(Review::getStarScore).average().orElse(0.0))
+                .reviewIdList(reviewList.stream().map(Review::getId).collect(Collectors.toList()))
                 .build();
     }
 }

@@ -40,7 +40,7 @@ public class SubjectResponse {
             return Brief.builder()
                     .subjectId(subject.getId())
                     .name(subject.getName())
-                    .subName(subject.getSubName())
+                    .subName(subject.getSubName() == null ? null : subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
                     .kyModelType(subject.getKyModelType() == null ? null : subject.getKyModelType().getDescription())
@@ -85,11 +85,11 @@ public class SubjectResponse {
             return Detail.builder()
                     .subjectId(subject.getId())
                     .name(subject.getName())
-                    .subName(subject.getSubName())
+                    .subName(subject.getSubName() == null ? null : subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
-                    .kyModelType(subject.getKyModelType().getDescription())
-                    .kyCoreType(subject.getKyCoreType().getDescription())
+                    .kyModelType(subject.getKyModelType() == null ? null : subject.getKyModelType().getDescription())
+                    .kyCoreType(subject.getKyCoreType() == null ? null : subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
                     .reviewSummary(reviewSummary)
                     .build();
@@ -103,11 +103,11 @@ public class SubjectResponse {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class ReviewSummary {
 
-        List<Long> reviewIdList;
-
         Integer totalCount; // 총 리뷰 개수
 
         Double avgStarScore; // 리뷰 평점
+
+        List<Long> reviewIdList;
     }
 
     @Getter
