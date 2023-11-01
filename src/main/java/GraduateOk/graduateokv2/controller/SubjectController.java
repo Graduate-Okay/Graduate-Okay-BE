@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,11 @@ public class SubjectController {
     public BaseResponse<SubjectResponse.Rank> getSubjectRank(@RequestParam(required = false) String searchWord,
                                                              @RequestParam(required = false) String type,
                                                              @RequestParam(required = false) Integer credit,
-                                                             @PageableDefault(size = 30, sort = "kyCount", direction = Sort.Direction.DESC)
+                                                             @PageableDefault(size = 30)
+                                                             @SortDefault.SortDefaults({
+                                                                     @SortDefault(sort = "kyCount", direction = Sort.Direction.DESC),
+                                                                     @SortDefault(sort = "name", direction = Sort.Direction.ASC)
+                                                             })
                                                              Pageable pageable) {
 
         return BaseResponse.ok(HttpStatus.OK, subjectService.getSubjectRank(searchWord, type, credit, pageable));
