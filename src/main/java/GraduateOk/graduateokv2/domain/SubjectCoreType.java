@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 public enum SubjectCoreType {
 
     // 핵심역량
-    CORE_CAPABILITY_BASIC("기초"),
-    CORE_CAPABILITY_HUMANITIES("인문"),
-    CORE_CAPABILITY_COMMUNICATION("소통"),
-    CORE_CAPABILITY_INFORMATION("지식정보"),
-    CORE_CAPABILITY_FUSION("창의융합"),
-    CORE_CAPABILITY_GLOBAL("글로벌"),
-    CORE_CAPABILITY_LEADERSHIP("리더십");
+    BASIC("기초"),
+    HUMANITIES("인문"),
+    COMMUNICATION("소통"),
+    INFORMATION("지식정보"),
+    FUSION("창의융합"),
+    GLOBAL("글로벌"),
+    LEADERSHIP("리더십");
 
     private final String description;
 

@@ -33,7 +33,19 @@ public class SubjectService {
      */
     @Transactional(readOnly = true)
     public SubjectResponse.Rank getSubjectRank(String searchWord, String type, Integer credit, Pageable pageable) {
-        Page<Subject> subjectList = subjectRepository.getSubjectRank(searchWord, type, credit, pageable);
+        SubjectModelType modelType = null;
+        SubjectCoreType coreType = null;
+
+        if (type != null) {
+            if (type.contains("지성인") || type.contains("창의인") || type.contains("평화인")) {
+                modelType = SubjectModelType.valueOf(type);
+            } else {
+                coreType = SubjectCoreType.valueOf(type);
+            }
+        }
+
+        Page<Subject> subjectList = subjectRepository.getSubjectRank(searchWord, modelType, coreType, credit, pageable);
+
         return SubjectResponse.Rank.of(subjectList);
     }
 

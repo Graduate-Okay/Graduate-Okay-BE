@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 public enum SubjectModelType {
 
     // 인재상
-    TALENTED_MODEL_INTELLIGENCE("소통하는 지성인"),
-    TALENTED_MODEL_ORIGINALITY("도전하는 창의인"),
-    TALENTED_MODEL_PEACE("실천하는 평화인");
+    INTELLIGENCE("소통하는 지성인"),
+    ORIGINALITY("도전하는 창의인"),
+    PEACE("실천하는 평화인");
 
     private final String description;
 

@@ -1,6 +1,8 @@
 package GraduateOk.graduateokv2.repository;
 
 import GraduateOk.graduateokv2.domain.Subject;
+import GraduateOk.graduateokv2.domain.SubjectCoreType;
+import GraduateOk.graduateokv2.domain.SubjectModelType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,11 +15,12 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query("select s from Subject s where " +
             "(:searchWord is null or (s.name like %:searchWord% or s.subName like %:searchWord%)) and " +
-            "(:type is null or s.kyModelType = :type or s.kyCoreType = :type) and " +
+            "(:type is null or s.kyModelType = :modelType or s.kyCoreType = :coreType) and " +
             "(:credit is null or s.credit = :credit) and " +
             "s.isDeleted = false and s.classification = '교양선택'")
     Page<Subject> getSubjectRank(@Param("searchWord") String searchWord,
-                                 @Param("type") String type,
+                                 @Param("modelType") SubjectModelType modelType,
+                                 @Param("coreType") SubjectCoreType coreType,
                                  @Param("credit") Integer credit,
                                  Pageable pageable);
 
