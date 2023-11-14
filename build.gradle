@@ -70,3 +70,7 @@ bootJar {
     enabled = true
     archiveFileName = 'graduate-ok-v2.jar'
 }
+
+jar {
+    enabled = false
+}
