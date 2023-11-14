@@ -66,6 +66,7 @@ dependencyManagement {
     }
 }
 
-jar {
-    enabled = false
+bootJar {
+    enabled = true
+    archiveFileName = 'graduate-ok-v2.jar'
 }
