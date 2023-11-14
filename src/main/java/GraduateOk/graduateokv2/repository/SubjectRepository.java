@@ -15,7 +15,8 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query("select s from Subject s where " +
             "(:searchWord is null or (s.name like %:searchWord% or s.subName like %:searchWord%)) and " +
-            "(:type is null or s.kyModelType = :modelType or s.kyCoreType = :coreType) and " +
+            "(:modelType is null or s.kyModelType = :modelType) and " +
+            "(:coreType is null or s.kyCoreType = :coreType) and " +
             "(:credit is null or s.credit = :credit) and " +
             "s.isDeleted = false and s.classification = '교양선택'")
     Page<Subject> getSubjectRank(@Param("searchWord") String searchWord,
