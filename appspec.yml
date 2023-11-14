@@ -16,5 +16,5 @@ permissions:
 hooks:
   AfterInstall:
     - location: deploy.sh
-      timeout: 60
+      timeout: 1500
       runas: ec2-user
