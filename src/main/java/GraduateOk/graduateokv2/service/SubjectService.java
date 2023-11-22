@@ -37,7 +37,7 @@ public class SubjectService {
         SubjectCoreType coreType = null;
 
         if (type != null) {
-            if (type.contains("지성인") || type.contains("창의인") || type.contains("평화인")) {
+            if (type.equals("INTELLIGENCE") || type.equals("ORIGINALITY") || type.equals("PEACE")) {
                 modelType = SubjectModelType.valueOf(type);
             } else {
                 coreType = SubjectCoreType.valueOf(type);
