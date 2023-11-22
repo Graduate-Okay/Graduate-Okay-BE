@@ -4,7 +4,8 @@ PROJECT_ROOT="/home/ec2-user/graduateokv2"
 JAR_FILE_NAME="graduate-ok-v2.jar"
 JAR_FILE="$PROJECT_ROOT/$JAR_FILE_NAME"
 TIME_NOW=$(date +%c)
-LOG="$PROJECT_ROOT/log_$TIME_NOW.log"
+FORMATTED_DATE=$(date +'%y%m%d')
+LOG="$PROJECT_ROOT/log_$FORMATTED_DATE.log"
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
 # 현재 구동 중인 애플리케이션 pid 확인
@@ -35,9 +36,10 @@ sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
 # java 실행
 echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
-#cp $PROJECT_ROOT/build/libs/*.jar $JAR_FILE
-cd $PROJECT_ROOT
 nohup java -jar $JAR_FILE > $LOG 2>&1 &
+
+CURRENT_PID=$(pgrep -f $JAR_FILE)
+echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG
 
 #disown
 #
