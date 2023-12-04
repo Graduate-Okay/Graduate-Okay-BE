@@ -50,6 +50,9 @@ dependencies {
 
     // mail
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.0'
+
+    // pdfbox
+    implementation 'org.apache.pdfbox:pdfbox:2.0.24'
 }
 
 //tasks.named('test') {

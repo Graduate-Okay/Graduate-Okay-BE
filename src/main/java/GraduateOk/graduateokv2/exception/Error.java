@@ -14,6 +14,8 @@ public enum Error {
     BAD_EMAIL(HttpStatus.BAD_REQUEST, "400_EMAIL", "한신대학교 이메일이어야 합니다."),
     BAD_AUTH_NUMBER(HttpStatus.BAD_REQUEST, "400_AUTH", "잘못된 인증번호입니다."),
     BAD_PDF(HttpStatus.BAD_REQUEST, "400_PDF", "한신대학교 학업성적확인서 PDF여야 합니다."),
+    INCORRECT_FILE_TYPE(HttpStatus.BAD_REQUEST, "400_FILE_TYPE", "잘못된 파일 형식입니다."),
+    CANNOT_READ_PDF(HttpStatus.BAD_REQUEST, "400_READ_PDF", "파일을 읽을 수 없습니다."),
 
     // 401 UNAUTHORIZED 권한없음(인증 실패)
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "권한 인증에 실패했습니다."),
@@ -32,7 +34,7 @@ public enum Error {
     NOT_FOUND_MAJOR(HttpStatus.NOT_FOUND, "404_MAJOR", "존재하지 않는 전공입니다."),
     NOT_FOUND_SUBJECT(HttpStatus.NOT_FOUND, "404_SUBJECT", "존재하지 않는 과목입니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "404_REVIEW", "존재하지 않는 리뷰입니다."),
-    NOT_FOUND_PDF(HttpStatus.NOT_FOUND, "404_PDF", "PDF가 존재하지 않습니다."),
+    NOT_FOUND_PDF_CONTENT(HttpStatus.NOT_FOUND, "404_PDF_CONTENT", "PDF 내용이 존재하지 않습니다."),
 
     // 409 CONFLICT 중복된 리소스
     ALREADY_SAVED_EMAIL(HttpStatus.CONFLICT, "409_EMAIL", "이미 가입된 이메일입니다."),
