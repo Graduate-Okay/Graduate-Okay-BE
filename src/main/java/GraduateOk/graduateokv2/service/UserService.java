@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -69,7 +70,7 @@ public class UserService {
      * 이메일 중복 확인
      */
     private void checkEmail(String email) {
-        userRepository.getUserByEmail(email).ifPresent(user -> {
+        userRepository.findByEmail(email).ifPresent(user -> {
             throw new CustomException(Error.ALREADY_SAVED_EMAIL);
         });
     }
@@ -140,7 +141,7 @@ public class UserService {
      */
     @Transactional
     public UserResponse.Login login(UserRequest.Basic request) {
-        User user = userRepository.getUserByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -167,6 +168,16 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
         user.changeJwt(null);
+    }
+
+    /**
+     * 토큰 재발급
+     */
+    @Transactional
+    public String getAccessToken(UserRequest.Token request) {
+        User user = userRepository.findByJwt(request.getRefreshToken())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
+        return jwtProvider.generateAccessToken(user.getId(), "ROLE_USER", new Date().getTime());
     }
 
     /**

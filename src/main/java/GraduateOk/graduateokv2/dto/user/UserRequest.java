@@ -47,4 +47,13 @@ public class UserRequest {
 
         String nickname;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Token {
+
+        String refreshToken;
+    }
 }

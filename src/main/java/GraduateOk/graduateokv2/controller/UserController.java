@@ -68,6 +68,16 @@ public class UserController {
     }
 
     /**
+     * NAME : 토큰 재발급
+     * DATA : 2023-12-05
+     */
+    @PostMapping("/token")
+    @PreAuthorize("hasRole('USER')")
+    public BaseResponse<String> getAccessToken(@Valid @RequestBody UserRequest.Token request) {
+        return BaseResponse.ok(HttpStatus.OK, userService.getAccessToken(request));
+    }
+
+    /**
      * NAME : 회원 정보 조회
      * DATE : 2023-10-25
      */

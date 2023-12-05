@@ -27,7 +27,8 @@ public class JwtProvider {
 
     private final Key key;
     private static final String AUTHORITY_KEY = "auth";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 12L * 60L * 60L * 1000L; // 12시간
+//    private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 12L * 60L * 60L * 1000L; // 12시간
+    private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 5L * 60L * 1000L; // 5분
     private static final long REFRESH_TOKEN_EXPIRE_TIME_MILLIS = 30L * 24L * 60L * 60L * 1000L; // 30일
 
     public JwtProvider(@Value("${JWT_SECRET_KEY}") String secretKey) {
@@ -39,24 +40,30 @@ public class JwtProvider {
     public TokenResponse generateToken(Long id, String role) {
         long now = new Date().getTime();
 
-        String accessToken = Jwts.builder()
+        return TokenResponse.builder()
+                .tokenType("Bearer")
+                .accessToken(generateAccessToken(id, role, now))
+                .refreshToken(generateRefreshToken(id, now))
+                .build();
+    }
+
+    // access token 발급
+    public String generateAccessToken(Long id, String role, long now) {
+        return Jwts.builder()
                 .setSubject(id.toString())
                 .claim(AUTHORITY_KEY, role) // 정보 저장
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(new Date(now + ACCESS_TOKEN_EXPIRE_TIME_MILLIS))
                 .compact();
+    }
 
-        String refreshToken = Jwts.builder()
+    // refresh token 발급
+    private String generateRefreshToken(Long id, long now) {
+        return Jwts.builder()
                 .setSubject(id.toString())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME_MILLIS))
                 .compact();
-
-        return TokenResponse.builder()
-                .tokenType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
     }
 
     // 권한 정보 얻기
