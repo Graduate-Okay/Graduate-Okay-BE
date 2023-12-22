@@ -8,39 +8,31 @@ FORMATTED_DATE=$(date +'%y%m%d')
 LOG="$PROJECT_ROOT/log_$FORMATTED_DATE.log"
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
-# 현재 구동 중인 애플리케이션 pid 확인
-CURRENT_PID=$(pgrep -f $JAR_FILE)
+# 현재 구동 중인 java 종료
+PID=$(sudo lsof -i TCP -P | grep java | grep LISTEN | awk '{print $2}')
+echo $PID
 
-# 프로세스가 켜져 있으면 종료
-if [ -z $CURRENT_PID ]; then
-  echo "$TIME_NOW > 현재 실행 중인 애플리케이션이 없습니다" >> $DEPLOY_LOG
-else
-  echo "$TIME_NOW > 실행 중인 $CURRENT_PID 애플리케이션 종료 " >> $DEPLOY_LOG
-  kill -15 $CURRENT_PID
+if [ -n "$PID" ]; then
+  echo "실행 중인 java 프로세스를 종료합니다 (PID: $PID)"
+  sudo kill -15 $PID
+  sleep 5
 fi
 
 # redis 설치
 echo "$TIME_NOW > Redis 설치" >> $DEPLOY_LOG
 sudo yum update
-sudo amazon-linux-extras install -y redis6
-sudo systemctl start redis
+sudo yum install -y redis6
+sudo systemctl start redis6
 
 # 시간 변경
 echo "$TIME_NOW > 시간 변경" >> $DEPLOY_LOG
 sudo rm -rf /etc/localtime
 sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-# java kill
-#sudo killall java
-#sleep 5
+# nginx 실행
+sudo systemctl reload nginx || sudo systemctl start nginx
 
 # java 실행
-echo "$TIME_NOW > $JAR_FILE 파일 실행" >> $DEPLOY_LOG
+echo "$TIME_NOW > $JAR_FILE_NAME 파일 실행" >> $DEPLOY_LOG
+sudo chmod 777 $JAR_FILE
 nohup java -jar $JAR_FILE > $LOG 2>&1 &
-
-CURRENT_PID=$(pgrep -f $JAR_FILE)
-echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG
-
-#disown
-#
-#exit

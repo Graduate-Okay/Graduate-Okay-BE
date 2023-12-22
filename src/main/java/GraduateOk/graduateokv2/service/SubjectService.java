@@ -36,7 +36,7 @@ public class SubjectService {
         SubjectModelType modelType = null;
         SubjectCoreType coreType = null;
 
-        if (type != null) {
+        if (type != null && !type.isEmpty()) {
             if (type.equals("INTELLIGENCE") || type.equals("ORIGINALITY") || type.equals("PEACE")) {
                 modelType = SubjectModelType.valueOf(type);
             } else {
