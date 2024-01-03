@@ -1,6 +1,7 @@
 package GraduateOk.graduateokv2.controller;
 
 import GraduateOk.graduateokv2.dto.common.BaseResponse;
+import GraduateOk.graduateokv2.dto.common.TokenResponse;
 import GraduateOk.graduateokv2.dto.user.UserRequest;
 import GraduateOk.graduateokv2.dto.user.UserResponse;
 import GraduateOk.graduateokv2.service.UserService;
@@ -73,7 +74,7 @@ public class UserController {
      */
     @PostMapping("/token")
     @PreAuthorize("hasRole('USER')")
-    public BaseResponse<String> getAccessToken(@Valid @RequestBody UserRequest.Token request) {
+    public BaseResponse<TokenResponse> getAccessToken(@Valid @RequestBody UserRequest.Token request) {
         return BaseResponse.ok(HttpStatus.OK, userService.getAccessToken(request));
     }
 

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -174,10 +173,10 @@ public class UserService {
      * 토큰 재발급
      */
     @Transactional
-    public String getAccessToken(UserRequest.Token request) {
+    public TokenResponse getAccessToken(UserRequest.Token request) {
         User user = userRepository.findByJwt(request.getRefreshToken())
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
-        return jwtProvider.generateAccessToken(user.getId(), "ROLE_USER", new Date().getTime());
+        return jwtProvider.generateToken(user.getId(), "ROLE_USER");
     }
 
     /**
