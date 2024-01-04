@@ -30,7 +30,7 @@ sudo rm -rf /etc/localtime
 sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
 # nginx 실행
-sudo systemctl reload nginx || sudo systemctl start nginx
+sudo systemctl start nginx
 
 # java 실행
 echo "$TIME_NOW > $JAR_FILE_NAME 파일 실행" >> $DEPLOY_LOG
