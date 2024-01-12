@@ -1,5 +1,6 @@
 package GraduateOk.graduateokv2.dto.subject;
 
+import GraduateOk.graduateokv2.domain.Review;
 import GraduateOk.graduateokv2.domain.Subject;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -79,9 +80,13 @@ public class SubjectResponse {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Detail extends Brief {
 
-        ReviewSummary reviewSummary; // 리뷰 정보
+        long reviewCount; // 총 리뷰 개수
 
-        public static SubjectResponse.Detail of(Subject subject, ReviewSummary reviewSummary) {
+        Double avgStarScore; // 리뷰 평점
+
+        List<ReviewData> reviewDataList;
+
+        public static SubjectResponse.Detail of(Subject subject) {
             return Detail.builder()
                     .subjectId(subject.getId())
                     .name(subject.getName())
@@ -91,7 +96,11 @@ public class SubjectResponse {
                     .kyModelType(subject.getKyModelType() == null ? null : subject.getKyModelType().getDescription())
                     .kyCoreType(subject.getKyCoreType() == null ? null : subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
-                    .reviewSummary(reviewSummary)
+                    .reviewCount(subject.getReviewList() == null ? 0 : subject.getReviewList().size())
+                    .avgStarScore(subject.getReviewList().stream()
+                            .mapToDouble(Review::getStarScore).average()
+                            .orElse(0.0))
+                    .reviewDataList(subject.getReviewList() == null ? null : ReviewData.of(subject.getReviewList()))
                     .build();
         }
     }
@@ -101,13 +110,28 @@ public class SubjectResponse {
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class ReviewSummary {
+    public static class ReviewData {
 
-        Integer totalCount; // 총 리뷰 개수
+        Long reviewId;
 
-        Double avgStarScore; // 리뷰 평점
+        String title;
 
-        List<Long> reviewIdList;
+        String username;
+
+        Float starScore;
+
+        public static List<ReviewData> of(List<Review> reviewList) {
+            return reviewList.stream().map(ReviewData::of).collect(Collectors.toList());
+        }
+
+        public static ReviewData of(Review review) {
+            return ReviewData.builder()
+                    .reviewId(review.getId())
+                    .title(review.getTitle())
+                    .username(review.getUser().getNickname())
+                    .starScore(review.getStarScore())
+                    .build();
+        }
     }
 
     @Getter

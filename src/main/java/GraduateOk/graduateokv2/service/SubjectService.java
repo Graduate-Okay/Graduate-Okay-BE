@@ -25,7 +25,6 @@ import java.util.Optional;
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
-    private final ReviewService reviewService;
     private final MajorRepository majorRepository;
 
     /**
@@ -56,7 +55,7 @@ public class SubjectService {
     public SubjectResponse.Detail getSubjectDetail(Long id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_SUBJECT));
-        return SubjectResponse.Detail.of(subject, reviewService.getReviewSummary(id));
+        return SubjectResponse.Detail.of(subject);
     }
 
     /**------------------------------------------------------------------------------------------------------------*/

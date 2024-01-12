@@ -21,6 +21,7 @@ public class Subject extends BaseTimeEntity {
 
     String name; // 과목 이름
 
+    @Setter
     String subName; // 교양 과목명 변경된 경우 이전 과목명 저장
 
     String code; // 과목코드
@@ -49,8 +50,4 @@ public class Subject extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviewList = new ArrayList<>();
-
-    public void setSubName(String subName) {
-        this.subName = subName;
-    }
 }
