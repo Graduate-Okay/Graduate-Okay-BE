@@ -36,21 +36,14 @@ public class GraduateService {
         }
 
         // 기본 정보 추출
-        Graduate graduate = extractBasicInfo(pdf);
+//        Graduate graduate = extractBasicInfo(pdf);
+        Graduate graduate = new Graduate();
 
         // 검사 및 부족한 졸업요건 저장
-        String failure = checkAndGetFailure(graduate);
+//        String failure = checkAndGetFailure(graduate);
+        String failure = "";
 
-        return GraduateResponseDto.builder()
-                .isGraduateOk(failure.isEmpty())
-                .totalCredit(graduate.getTotalCredit())
-                .kyCredit(graduate.getKyCredit())
-                .majorCredit(graduate.getMajorCredit())
-                .doubleMajorCredit(graduate.getDoubleMajorCredit())
-                .nonSubject(graduate.getNonSubject())
-                .mileage(graduate.getMileage())
-                .failure(failure)
-                .build();
+        return GraduateResponseDto.of(graduate, failure);
     }
 
     /**

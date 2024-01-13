@@ -1,5 +1,6 @@
 package GraduateOk.graduateokv2.dto.graduate;
 
+import GraduateOk.graduateokv2.domain.Graduate;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -25,4 +26,17 @@ public class GraduateResponseDto {
     Integer mileage; // 마일리지
 
     String failure; // 부족한 졸업요건 (없으면 null)
+
+    public static GraduateResponseDto of(Graduate graduate, String failure) {
+        return GraduateResponseDto.builder()
+                .isGraduateOk(failure.isEmpty())
+                .totalCredit(graduate.getTotalCredit())
+                .kyCredit(graduate.getKyCredit())
+                .majorCredit(graduate.getMajorCredit())
+                .doubleMajorCredit(graduate.getDoubleMajorCredit())
+                .nonSubject(graduate.getNonSubject())
+                .mileage(graduate.getMileage())
+                .failure(failure)
+                .build();
+    }
 }
