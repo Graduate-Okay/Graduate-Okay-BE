@@ -27,8 +27,7 @@ public class JwtProvider {
 
     private final Key key;
     private static final String AUTHORITY_KEY = "auth";
-//    private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 12L * 60L * 60L * 1000L; // 12시간
-    private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 5L * 60L * 1000L; // 5분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 24L * 60L * 60L * 1000L; // 24시간
     private static final long REFRESH_TOKEN_EXPIRE_TIME_MILLIS = 30L * 24L * 60L * 60L * 1000L; // 30일
 
     public JwtProvider(@Value("${JWT_SECRET_KEY}") String secretKey) {
