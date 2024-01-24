@@ -16,6 +16,8 @@ public enum Error {
     BAD_PDF(HttpStatus.BAD_REQUEST, "400_PDF", "한신대학교 학업성적확인서 PDF여야 합니다."),
     INCORRECT_FILE_TYPE(HttpStatus.BAD_REQUEST, "400_FILE_TYPE", "잘못된 파일 형식입니다."),
     CANNOT_READ_PDF(HttpStatus.BAD_REQUEST, "400_READ_PDF", "파일을 읽을 수 없습니다."),
+    CANNOT_CREATE_TEMPORARY_FOLDER(HttpStatus.BAD_REQUEST, "400_TEMP_FOLDER", "임시 폴더를 상생할 수 없습니다."),
+    CANNOT_DELETE_TEMPORARY_FOLDER(HttpStatus.BAD_REQUEST, "400_TEMP_FOLDER", "임시 폴더를 삭제할 수 없습니다."),
 
     // 401 UNAUTHORIZED 권한없음(인증 실패)
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "권한 인증에 실패했습니다."),

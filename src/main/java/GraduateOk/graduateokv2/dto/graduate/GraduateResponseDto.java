@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GraduateResponseDto {
 
+    String extractData; // todo: 테스트용. 추후 삭제
+
     Boolean isGraduateOk; // 졸업 가능 여부
 
     Integer totalCredit; // 총 취득 학점
@@ -29,6 +31,7 @@ public class GraduateResponseDto {
 
     public static GraduateResponseDto of(Graduate graduate, String failure) {
         return GraduateResponseDto.builder()
+                .extractData(graduate.toString())
                 .isGraduateOk(failure.isEmpty())
                 .totalCredit(graduate.getTotalCredit())
                 .kyCredit(graduate.getKyCredit())

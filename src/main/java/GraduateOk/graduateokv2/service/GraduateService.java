@@ -36,12 +36,10 @@ public class GraduateService {
         }
 
         // 기본 정보 추출
-//        Graduate graduate = extractBasicInfo(pdf);
-        Graduate graduate = new Graduate();
+        Graduate graduate = extractBasicInfo(pdf);
 
         // 검사 및 부족한 졸업요건 저장
-//        String failure = checkAndGetFailure(graduate);
-        String failure = "";
+        String failure = checkAndGetFailure(graduate);
 
         return GraduateResponseDto.of(graduate, failure);
     }
@@ -60,13 +58,13 @@ public class GraduateService {
         // 임시 폴더 생성
         File tempFolder = new File("temp");
         if (!tempFolder.exists()) {
-            tempFolder.mkdirs();
-            System.out.println("Temp folder created.");
+            if (!tempFolder.mkdirs()) {
+                throw new CustomException(Error.CANNOT_CREATE_TEMPORARY_FOLDER);
+            }
         }
 
         // MultipartFile to File
         File file = new File(tempFolder + "/" + multipartFile.getOriginalFilename());
-        System.out.println("임시 폴더에 파일 생성");
 
         try {
             if (file.createNewFile()) {
@@ -74,24 +72,24 @@ public class GraduateService {
                     fos.write(multipartFile.getBytes());
                 }
             }
-            System.out.println("파일 생성");
 
             // 텍스트 추출
             PDDocument pdfDoc = PDDocument.load(file);
             extractText = new PDFTextStripper().getText(pdfDoc);
-            System.out.println("텍스트 추출");
         } catch (IOException e) {
             throw new CustomException(Error.CANNOT_READ_PDF);
         }
 
-        // 파일 삭제 todo: 파일 삭제 안 되는 것 해결
+        // 파일 삭제
         File[] files = tempFolder.listFiles();
-        for (File f : files) {
-            f.delete();
+        if (files != null) {
+            for (File f : files) {
+                if (!f.delete()) throw new CustomException(Error.CANNOT_DELETE_TEMPORARY_FOLDER);
+            }
+            if (!tempFolder.delete()) throw new CustomException(Error.CANNOT_DELETE_TEMPORARY_FOLDER);
+        } else {
+            throw new CustomException(Error.CANNOT_DELETE_TEMPORARY_FOLDER);
         }
-        System.out.println("파일 삭제");
-        tempFolder.delete();
-        System.out.println("임시 폴더 삭제");
 
         return extractText;
     }
@@ -100,111 +98,165 @@ public class GraduateService {
      * 기본 정보 추출
      */
     private Graduate extractBasicInfo(String pdf) {
+
+        int studentId = 0; // 학번
+        String studentMajor = null; // 주전공
+        String studentDoubleMajor = null; // 복수전공
+        String studentSubMajor = null; // 부전공
+
+        int totalCredit = 0; // 총 취득 학점
+        int kyCredit = 0; // 교양 학점
+        int majorCredit = 0; // 전공 학점
+        int doubleMajorCredit = 0; // 복수 전공 학점
+        int subMajorCredit = 0; // 부전공 학점
+
+        int nonSubject = 0; // 비교과 이수 학기
+        int mileage = 0; // 비교과 마일리지
+        boolean engCertification = false;
+
+        List<String> requiredMajorList = new ArrayList<>();
+        List<String> requiredKyList = new ArrayList<>();
+        List<String> allKyList = new ArrayList<>();
+
         String[] pdfContent = pdf.split("\n");
-        Graduate graduate = new Graduate();
-        List<String> requiredMajor = new ArrayList<>();
-        List<String> requiredKy = new ArrayList<>();
-        List<String> allKy = new ArrayList<>();
 
         for (int i = 0; i < pdfContent.length; i++) {
             String line = pdfContent[i];
 
             // 학번 추출
             if (line.contains("학 번")) {
-                graduate.setStudentId(Integer.parseInt(line.substring(4, 8)));
+                studentId = Integer.parseInt(line.substring(4, 8));
+                log.info("학번 : " + studentId);
             }
 
             // 학과 추출 (주전공)
             if (line.contains("부전공Ⅰ")) {
                 String[] strings = pdfContent[i - 1].split(" ");
-                graduate.setStudentMajor(strings[2]);
+                studentMajor = strings[2];
+                log.info("주전공 : " + studentMajor);
             }
 
             // 학과 추출 (복수전공)
             if (line.contains("복수전공Ⅰ")) {
                 String[] strings = line.split(" ");
                 if (!strings[7].contains("복수전공Ⅱ")) {
-                    graduate.setStudentDoubleMajor(strings[7]);
+                    studentDoubleMajor = strings[7];
                 }
+                log.info("복수전공 : " + studentDoubleMajor);
             }
 
             // 학과 추출 (부전공)
             if (line.contains("부전공Ⅱ")) {
                 String[] strings = line.split(" ");
                 if (!strings[0].contains("부전공Ⅱ")) {
-                    graduate.setStudentSubMajor(strings[0]);
+                    studentSubMajor = strings[0];
                 }
+                log.info("부전공 : " + studentSubMajor);
             }
 
             // 총 취득학점 추출
             if (line.contains("총 취득학점")) {
-                graduate.setTotalCredit(line.length());
+                totalCredit = Integer.parseInt(line.substring(7));
+                log.info("총 취득학점 : " + totalCredit);
             }
 
             // 교양, 전공 이수학점 추출
             if (line.contains("교양: ") && line.contains("전공: ")) {
-                graduate.setKyCredit(Integer.parseInt(line.substring(4, 6).trim()));
-                graduate.setMajorCredit(Integer.parseInt(line.substring(11, 13).trim()));
+                String kyCreditString = line.substring(4, 6).trim();
+                String majorCreditString = line.substring(11, 13).trim();
+                kyCredit = Integer.parseInt(kyCreditString);
+                majorCredit = Integer.parseInt(majorCreditString);
+                log.info("교양 학점 : " + kyCredit);
+                log.info("전공 학점 : " + majorCredit);
             }
 
             // 복수전공 이수학점 추출
             if (line.contains("복수:")) {
-                graduate.setDoubleMajorCredit(Integer.parseInt(line.substring(4, 6).trim()));
+                String doubleMajorCreditString = line.substring(4, 6).trim();
+                doubleMajorCredit = Integer.parseInt(doubleMajorCreditString);
+                log.info("복수전공 학점 : " + doubleMajorCredit);
             }
 
             // 부전공 이수학점 추출
             if (line.contains("부전공:")) {
-                graduate.setSubMajorCredit(Integer.parseInt(line.substring(5, 7).trim()));
+                String subMajorCreditString = line.substring(5, 7).trim();
+                subMajorCredit = Integer.parseInt(subMajorCreditString);
+                log.info("부전공 학점 : " + subMajorCredit);
             }
 
             // 수강한 전필 과목 추출
             if (line.startsWith("전필") && !line.contains("F") && !line.contains("NP")) {
                 String[] strings = line.split(" ");
-                requiredMajor.add(strings[2]);
+                String majorSubject = strings[2];
+                requiredMajorList.add(majorSubject);
+
+                log.info("\t\t수강한 전필 과목 : " + majorSubject);
             }
 
             // 수강한 교필 과목 추출
             if (line.startsWith("교필") && !line.contains("NP")) {
                 String[] strings = line.split("\\s+");
+                String kySubject = null;
                 if (!(strings[4].contains("F"))) {
-                    requiredKy.add(strings[2]);
+                    kySubject = strings[2];
+                    requiredKyList.add(kySubject);
                 }
+
+                log.info("\t\t수강한 교필 과목 : " + kySubject);
             }
 
             // 비교과 이수 학기 카운트
             if (line.contains("학기 인정")) {
-                graduate.setNonSubject(graduate.getNonSubject() + 1);
+                nonSubject++;
+                log.info("비교과 이수 학기 인정 카운트 +1 (현재 : " + nonSubject + ")");
             }
 
             // 마일리지 추출
             if (line.contains("마일리지")) {
-                graduate.setMileage(Integer.parseInt(line.substring(22)));
+                String mileageString = line.substring(22);
+                mileage = Integer.parseInt(mileageString);
+                log.info("마일리지 : " + mileage);
             }
 
             // 영어인증자 추출
             if (line.contains("영어인증")) {
-                graduate.setEngCertification(true);
+                engCertification = true;
+                log.info("영어인증자");
             }
 
             // 모든 교양 과목 추출 (for 인재상 & 핵심역량 검사, 교양 카운트 증가)
             if ((line.startsWith("교선") || line.startsWith("교필")) && !line.contains("NP")) {
                 String[] strings = line.split("\\s+");
+                String allKySubject = null;
                 if (strings.length < 5) {
-                    allKy.add(strings[2]);
+                    allKySubject = strings[2];
+                    allKyList.add(strings[2]);
                 } else if (!(strings[4].contains("F"))) {
-                    allKy.add(strings[2]);
+                    allKySubject = strings[2];
+                    allKyList.add(strings[2]);
                 }
+                log.info("\t\t모든 교양 과목 : " + allKySubject);
             }
         }
 
-        graduate.setRequiredMajor(requiredMajor);
-        graduate.setRequiredKy(requiredKy);
-        graduate.setAllKy(allKy);
-
-        // 복전 여부 체크
-        if (!graduate.getStudentDoubleMajor().isEmpty()) graduate.setDoubleMajor(true);
-
-        return graduate;
+        return Graduate.builder()
+                .studentId(studentId)
+                .studentMajor(studentMajor)
+                .studentDoubleMajor(studentDoubleMajor)
+                .studentSubMajor(studentSubMajor)
+                .isDoubleMajor(studentDoubleMajor != null)
+                .totalCredit(totalCredit)
+                .kyCredit(kyCredit)
+                .majorCredit(majorCredit)
+                .doubleMajorCredit(doubleMajorCredit)
+                .subMajorCredit(subMajorCredit)
+                .nonSubject(nonSubject)
+                .mileage(mileage)
+                .engCertification(engCertification)
+                .requiredMajorList(requiredMajorList)
+                .requiredKyList(requiredKyList)
+                .allKyList(allKyList)
+                .build();
     }
 
     /**
