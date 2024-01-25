@@ -427,7 +427,153 @@ public class GraduateService {
      * 교필 검사
      */
     private String checkRequiredKy(Graduate graduate) {
-        return "";
+        StringBuilder failure = new StringBuilder();
+        String addString;
+
+        int studentId = graduate.getStudentId();
+        String major = graduate.getStudentMajor();
+        List<String> userRequiredKyList = graduate.getRequiredKyList();
+        boolean engCertification = graduate.isEngCertification();
+
+        int chapel = 0; // 채플 카운트
+        boolean christian = false; // 기독교
+        boolean bible = false; // 성서
+        boolean collegeGuide = false; // 대생길
+        boolean socialGuide = false; // 사생길
+        boolean readDebate = false; // 독토
+        boolean writing = false; // 글기
+        boolean computing = false; // 컴퓨팅사고와SW코딩
+        boolean eng1 = false; // 영어1
+        boolean eng2 = false; // 영어2
+        int counseling = 0; // 진로와상담 카운트
+
+        for (String ky : userRequiredKyList) {
+            // 채플 카운트
+            if (ky.equals("채플")) chapel++;
+
+            // 기독교 과목 카운트
+            if (ky.contains("기독교")) christian = true;
+
+            // 성서 과목 카운트
+            if (ky.contains("성서")) bible = true;
+
+            // 대학생활길잡이
+            if (ky.equals("대학생활길잡이") || ky.equals("캠퍼스라이프")) collegeGuide = true;
+
+            // 사회생활길잡이 검사 (아노덴 '인문강단' 대체)
+            if (ky.equals("사회생활길잡이") || ky.equals("인문강단")) socialGuide = true;
+
+            // 독서와토론 검사
+            if (ky.equals("독서와토론")) readDebate = true;
+
+            // 글쓰기의기초 검사 (19학번 이후 소프트웨어교과목으로 대체 가능)
+            if (ky.equals("글쓰기의기초") || ky.contains("프로그래밍")) writing = true;
+
+            // 영어Ⅰ,Ⅱ 검사 (아노덴 'Speaking EnglishⅠ,Ⅱ' 대체 / 19학번 이후 영어인증자 면제)
+            if (ky.equals("영어Ⅰ") || ky.equals("EnglishⅠ") || engCertification || ky.equals("Essential English")) {
+                eng1 = true;
+            }
+            if (ky.equals("영어Ⅱ") || ky.equals("EnglishⅡ") || engCertification || ky.equals("Essential English")) {
+                eng2 = true;
+            }
+
+            // 진로와상담 검사
+            if (ky.equals("진로와상담")) counseling++;
+        }
+
+        // 채플 검사
+        if (chapel < 4) {
+            addString = "교양필수 '채플' " + (4 - chapel) + "회 미수강\n";
+            failure.append(addString);
+        }
+
+        // 기독교 과목 검사
+        if (!christian) {
+            failure.append("교양필수 '기독교 관련 과목' 미수강\n");
+        }
+
+        // 성서 과목 검사
+        if (!bible) {
+            failure.append("교양필수 '성서 관련 과목' 미수강\n");
+        }
+
+        // 대학생활길잡이 검사 (아노덴 '캠퍼스라이프' 대체)
+        if (!collegeGuide) {
+            if (major.contains("아노덴")) {
+                failure.append("교양필수 '캠퍼스라이프' 미수강\n");
+            } else {
+                failure.append("교양필수 '대학생활길잡이' 미수강\n");
+            }
+        }
+
+        // 사회생활길잡이 검사 (아노덴 '인문강단' 대체)
+        if (!socialGuide) {
+            if (major.contains("아노덴")) {
+                failure.append("교양필수 '인문강단' 미수강\n");
+            } else {
+                failure.append("교양필수 '사회생활길잡이' 미수강\n");
+            }
+        }
+
+        // 독서와토론 검사 (23학번부터 독토 안 들어도 됨)
+        if (studentId < 2023 && !readDebate) {
+            failure.append("교양필수 '독서와토론' 미수강\n");
+        }
+
+        // 글쓰기의기초 검사 (19학번 이후 소프트웨어 과목으로 대체 가능 / 23학번부터 글기만 허용)
+        if (!writing) {
+            if (studentId >= 2019 && studentId <= 2022) {
+                failure.append("교양필수 '글쓰기의기초' 또는 '소프트웨어교과목' 미수강\n");
+            } else {
+                failure.append("교양필수 '글쓰기의기초' 미수강\n");
+            }
+        }
+
+        // 2023학번부터 컴퓨팅사고와SW코딩 검사
+        if (studentId >= 2023 && !computing) {
+            failure.append("교양필수 '컴퓨팅사고와SW코딩' 미수강\n");
+        }
+
+        // 영어Ⅰ,Ⅱ 검사 (아노덴 'Speaking EnglishⅠ,Ⅱ' 대체 / 19학번 이후 영어인증자 면제 / 23학번부터 영어Ⅰ,Ⅱ 대신 Essential English)
+        if (!eng1) {
+            failure.append(getEnglishFailure(major, "영어Ⅰ", "Speaking EnglishⅠ", studentId));
+        }
+        if (!eng2) {
+            failure.append(getEnglishFailure(major, "영어Ⅱ", "Speaking EnglishⅡ", studentId));
+        }
+
+        // 진로와상담 검사
+        if (counseling < 4) {
+            addString = "교양필수 '진로와상담' " + (4 - counseling) + "회 미수강\n";
+            failure.append(addString);
+        }
+
+        return failure.toString();
+    }
+
+    /**
+     * 교필 검사 - 영어 부족한 요건
+     */
+    private String getEnglishFailure(String major, String name, String subName, int studentId) {
+        String engFailure;
+
+        if (studentId >= 2023) {
+            engFailure = "교양필수 'Essential English' 미수강";
+        } else {
+            if (major.contains("아노덴")) {
+                engFailure = "교양필수 '" + subName + "' 미수강";
+            } else {
+                engFailure = "교양필수 '" + name + "' 미수강";
+            }
+        }
+
+        if (studentId >= 2019) {
+            engFailure += " 또는 영어인증 미인증\n";
+        } else {
+            engFailure += "\n";
+        }
+
+        return engFailure;
     }
 
     /**
