@@ -271,6 +271,9 @@ public class GraduateService {
     private String checkAndGetFailure(Graduate graduate) {
         String failure = ""; // 부족한 요건 담는 String
 
+        // 졸업 학점, 교양 학점 검사
+        failure += checkTotalAndKy(graduate);
+
         // 전공 학점, 전필 검사
         // ㄴ 복전 아닐 경우
         failure += checkMajor(graduate);
@@ -296,35 +299,27 @@ public class GraduateService {
     }
 
     /**
-     * 전공 학점, 전필 검사 (복전 아닐 경우)
+     * 졸업 학점, 교양 학점 검사
      */
-    private String checkMajor(Graduate graduate) {
+    private String checkTotalAndKy(Graduate graduate) {
         StringBuilder failure = new StringBuilder();
         String addString;
 
         int totalCredit = graduate.getTotalCredit();
         int kyCredit = graduate.getKyCredit();
-        int majorCredit = graduate.getMajorCredit();
-        List<String> userRequiredMajorList = graduate.getRequiredMajorList();
-
-        // 학과 정보 가져오기
-        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
-                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
 
         // 해당 학번 과목 교양 학점 범위 (17~22학번 : 35~49학점, 23학번 : 35~45학점)
         int kyMaxCredit = 49;
         if (graduate.getStudentId() >= 2023) kyMaxCredit = 45;
 
+        // 학과 정보 가져오기
+        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+
         // 해당 학과 졸업학점 가져오기
         int graduateCredit = major.getGraduateCredit();
 
-        // 해당 학과 전공최소학점 가져오기
-        int majorMinCredit = major.getMinCredit();
-
-        // 해당 학과 전공필수 목록 가져오기 todo: 추후 해당 전공 정보의 전필 목록 가져오는 걸로 변경
-        List<String> requiredMajorList = subjectRepository.findRequiredMajorByMajorCode(major.getCode());
-
-        // 교양 초과 학점 검사 (총 취득학점 - 초과한 교양 학점) (17~22학번 : 35~49학점, 23학번 : 35~45학점)
+        // 교양 초과 학점 검사 (총 취득학점 - 초과한 교양 학점)
         if (kyCredit > kyMaxCredit) {
             int exceed = kyCredit - kyMaxCredit;
             totalCredit -= exceed;
@@ -344,6 +339,29 @@ public class GraduateService {
             addString = "교양학점 " + (35 - kyCredit) + "학점 미달\n";
             failure.append(addString);
         }
+
+        return failure.toString();
+    }
+
+    /**
+     * 전공 학점, 전필 검사 (복전 아닐 경우)
+     */
+    private String checkMajor(Graduate graduate) {
+        StringBuilder failure = new StringBuilder();
+        String addString;
+
+        int majorCredit = graduate.getMajorCredit();
+        List<String> userRequiredMajorList = graduate.getRequiredMajorList();
+
+        // 학과 정보 가져오기
+        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+
+        // 해당 학과 전공최소학점 가져오기
+        int majorMinCredit = major.getMinCredit();
+
+        // 해당 학과 전공필수 목록 가져오기 todo: 추후 해당 전공 정보의 전필 목록 가져오는 걸로 변경
+        List<String> requiredMajorList = subjectRepository.findRequiredMajorByMajorCode(major.getCode());
 
         // 전공 최소이수학점 검사
         if (majorCredit < majorMinCredit) {
@@ -365,7 +383,43 @@ public class GraduateService {
      * 전공 학점, 전필 검사 (복전일 경우)
      */
     private String checkDoubleMajor(Graduate graduate) {
-        return "";
+        StringBuilder failure = new StringBuilder();
+        String addString;
+
+        int majorCredit = graduate.getMajorCredit();
+        int doubleMajorCredit = graduate.getDoubleMajorCredit();
+        List<String> userRequiredMajorList = graduate.getRequiredMajorList();
+
+        // 학과 정보 가져오기
+        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+        Major doubleMajor = majorRepository.findByNameAndYear(graduate.getStudentDoubleMajor(), graduate.getStudentId())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+
+        // 해당 학과 전공필수 목록 가져오기 todo: 추후 해당 전공 정보의 전필 목록 가져오는 걸로 변경
+        List<String> requiredMajorList = subjectRepository.findRequiredMajorByMajorCode(major.getCode());
+        requiredMajorList.addAll(subjectRepository.findRequiredMajorByMajorCode(doubleMajor.getCode()));
+
+        // 주전공 최소이수학점(36학점) 검사
+        if (majorCredit < 36) {
+            addString = "주전공학점 " + (36 - majorCredit) + "학점 미달\n";
+            failure.append(addString);
+        }
+
+        // 부전공 최소이수학점(36학점) 검사
+        if (doubleMajorCredit < 36) {
+            addString = "복수전공학점 " + (36 - doubleMajorCredit) + "학점 미달\n";
+            failure.append(addString);
+        }
+
+        // 전필 과목 검사
+        requiredMajorList.removeAll(userRequiredMajorList);
+        for (String subject : requiredMajorList) {
+            addString = "전공필수 '" + subject + "' 미수강\n";
+            failure.append(addString);
+        }
+
+        return failure.toString();
     }
 
     /**
