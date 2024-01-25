@@ -37,6 +37,7 @@ public enum Error {
     NOT_FOUND_SUBJECT(HttpStatus.NOT_FOUND, "404_SUBJECT", "존재하지 않는 과목입니다."),
     NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "404_REVIEW", "존재하지 않는 리뷰입니다."),
     NOT_FOUND_PDF_CONTENT(HttpStatus.NOT_FOUND, "404_PDF_CONTENT", "PDF 내용이 존재하지 않습니다."),
+    NOT_FOUND_YEAR_MAJOR(HttpStatus.NOT_FOUND, "404_MAJOR", "해당 학번의 전공 정보가 존재하지 않습니다."),
 
     // 409 CONFLICT 중복된 리소스
     ALREADY_SAVED_EMAIL(HttpStatus.CONFLICT, "409_EMAIL", "이미 가입된 이메일입니다."),

@@ -27,6 +27,8 @@ public class Major {
 
     String code; // 학과 코드
 
+    Integer year; // 연도 (연도별로 학점 조건이 다름)
+
     Integer minCredit; // 전공 최소 이수 학점
 
     Integer graduateCredit; // 전공 졸업 이수 학점

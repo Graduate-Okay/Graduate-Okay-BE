@@ -1,9 +1,12 @@
 package GraduateOk.graduateokv2.service;
 
 import GraduateOk.graduateokv2.domain.Graduate;
+import GraduateOk.graduateokv2.domain.Major;
 import GraduateOk.graduateokv2.dto.graduate.GraduateResponseDto;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
+import GraduateOk.graduateokv2.repository.MajorRepository;
+import GraduateOk.graduateokv2.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -23,6 +26,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class GraduateService {
+
+    private final MajorRepository majorRepository;
+    private final SubjectRepository subjectRepository;
 
     @Transactional
     public GraduateResponseDto isGraduateOk(MultipartFile multipartFile) {
@@ -293,45 +299,66 @@ public class GraduateService {
      * 전공 학점, 전필 검사 (복전 아닐 경우)
      */
     private String checkMajor(Graduate graduate) {
-        String failure = "";
+        StringBuilder failure = new StringBuilder();
+        String addString;
+
         int totalCredit = graduate.getTotalCredit();
         int kyCredit = graduate.getKyCredit();
         int majorCredit = graduate.getMajorCredit();
+        List<String> userRequiredMajorList = graduate.getRequiredMajorList();
+
+        // 학과 정보 가져오기
+        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
 
         // 해당 학번 과목 교양 학점 범위 (17~22학번 : 35~49학점, 23학번 : 35~45학점)
         int kyMaxCredit = 49;
         if (graduate.getStudentId() >= 2023) kyMaxCredit = 45;
-        // 해당 학과 졸업학점 가져오기
-        int graduateCredit = 130; // todo: 수정
-        // 해당 학과 전공최소학점 가져오기
-        int majorMinCredit = 72; // todo: 수정
-        // 해당 학과 전공필수 목록 가져오기
-        List<String> requiredMajorList = new ArrayList<>(); // todo: 수정
 
-        // (총 취득학점 - 초과한 교양 학점)
+        // 해당 학과 졸업학점 가져오기
+        int graduateCredit = major.getGraduateCredit();
+
+        // 해당 학과 전공최소학점 가져오기
+        int majorMinCredit = major.getMinCredit();
+
+        // 해당 학과 전공필수 목록 가져오기 todo: 추후 해당 전공 정보의 전필 목록 가져오는 걸로 변경
+        List<String> requiredMajorList = subjectRepository.findRequiredMajorByMajorCode(major.getCode());
+
+        // 교양 초과 학점 검사 (총 취득학점 - 초과한 교양 학점) (17~22학번 : 35~49학점, 23학번 : 35~45학점)
         if (kyCredit > kyMaxCredit) {
             int exceed = kyCredit - kyMaxCredit;
             totalCredit -= exceed;
-            failure += "교양학점 " + exceed + "학점 초과되어 총 취득 학점에서 " +
-                    exceed + "학점 제외 (총 취득학점 : " + totalCredit + "학점)\n";
+            addString = "교양학점 " + exceed + "학점 초과되어 총 취득 학점에서 " + exceed + "학점 제외 " +
+                    "(총 취득학점 : " + totalCredit + "학점)\n";
+            failure.append(addString);
         }
 
         // 졸업 학점 검사
         if (totalCredit < graduateCredit) {
-            failure += "졸업학점 " + (graduateCredit - totalCredit) + "학점 미달\n";
+            addString = "졸업학점 " + (graduateCredit - totalCredit) + "학점 미달\n";
+            failure.append(addString);
         }
 
-        // 교양 최소 학점 검사
+        // 교양 최소 학점 검사 (17~22학번 : 35~49학점, 23학번 : 35~45학점)
         if (kyCredit < 35) {
-            failure += "교양학점 " + (35 - kyCredit) + "학점 미달\n";
+            addString = "교양학점 " + (35 - kyCredit) + "학점 미달\n";
+            failure.append(addString);
         }
 
-        // 3. 전공 최소이수학점 검사
+        // 전공 최소이수학점 검사
         if (majorCredit < majorMinCredit) {
-            failure += "전공학점 " + (majorMinCredit - majorCredit) + "학점 미달\n";
+            addString = "전공학점 " + (majorMinCredit - majorCredit) + "학점 미달\n";
+            failure.append(addString);
         }
 
-        return failure;
+        // 전필 과목 검사
+        requiredMajorList.removeAll(userRequiredMajorList);
+        for (String subject : requiredMajorList) {
+            addString = "전공필수 '" + subject + "' 미수강\n";
+            failure.append(addString);
+        }
+
+        return failure.toString();
     }
 
     /**
