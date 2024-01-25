@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+@Slf4j // todo: 추후 로그 삭제
 @RequiredArgsConstructor
 @Service
 public class GraduateService {
@@ -137,7 +137,12 @@ public class GraduateService {
 
             // 학과 추출 (주전공)
             if (line.contains("부전공Ⅰ")) {
-                String[] strings = pdfContent[i - 1].split(" ");
+                String[] strings;
+                if (studentId < 2022) {
+                    strings = pdfContent[i - 1].split(" ");
+                } else {
+                    strings = pdfContent[i - 2].split(" ");
+                }
                 studentMajor = strings[2];
                 log.info("주전공 : " + studentMajor);
             }
@@ -162,31 +167,31 @@ public class GraduateService {
 
             // 총 취득학점 추출
             if (line.contains("총 취득학점")) {
-                totalCredit = Integer.parseInt(line.substring(7));
+                String[] strings = line.split(" ");
+                totalCredit = Integer.parseInt(strings[2]);
                 log.info("총 취득학점 : " + totalCredit);
             }
 
             // 교양, 전공 이수학점 추출
             if (line.contains("교양: ") && line.contains("전공: ")) {
-                String kyCreditString = line.substring(4, 6).trim();
-                String majorCreditString = line.substring(11, 13).trim();
-                kyCredit = Integer.parseInt(kyCreditString);
-                majorCredit = Integer.parseInt(majorCreditString);
+                String[] strings = line.split(" ");
+                kyCredit = Integer.parseInt(strings[1]);
+                majorCredit = Integer.parseInt(strings[3]);
                 log.info("교양 학점 : " + kyCredit);
                 log.info("전공 학점 : " + majorCredit);
             }
 
             // 복수전공 이수학점 추출
             if (line.contains("복수:")) {
-                String doubleMajorCreditString = line.substring(4, 6).trim();
-                doubleMajorCredit = Integer.parseInt(doubleMajorCreditString);
+                String[] strings = line.split(" ");
+                doubleMajorCredit = Integer.parseInt(strings[1]);
                 log.info("복수전공 학점 : " + doubleMajorCredit);
             }
 
             // 부전공 이수학점 추출
             if (line.contains("부전공:")) {
-                String subMajorCreditString = line.substring(5, 7).trim();
-                subMajorCredit = Integer.parseInt(subMajorCreditString);
+                String[] strings = line.split(" ");
+                subMajorCredit = Integer.parseInt(strings[1]);
                 log.info("부전공 학점 : " + subMajorCredit);
             }
 
@@ -200,13 +205,10 @@ public class GraduateService {
             }
 
             // 수강한 교필 과목 추출
-            if (line.startsWith("교필") && !line.contains("NP")) {
+            if (line.startsWith("교필") && !line.contains("F") && !line.contains("NP")) {
                 String[] strings = line.split("\\s+");
-                String kySubject = null;
-                if (!(strings[4].contains("F"))) {
-                    kySubject = strings[2];
-                    requiredKyList.add(kySubject);
-                }
+                String kySubject = strings[2];
+                requiredKyList.add(kySubject);
 
                 log.info("\t\t수강한 교필 과목 : " + kySubject);
             }
@@ -231,16 +233,10 @@ public class GraduateService {
             }
 
             // 모든 교양 과목 추출 (for 인재상 & 핵심역량 검사, 교양 카운트 증가)
-            if ((line.startsWith("교선") || line.startsWith("교필")) && !line.contains("NP")) {
+            if ((line.startsWith("교선") || line.startsWith("교필")) && !line.contains("F") && !line.contains("NP")) {
                 String[] strings = line.split("\\s+");
-                String allKySubject = null;
-                if (strings.length < 5) {
-                    allKySubject = strings[2];
-                    allKyList.add(strings[2]);
-                } else if (!(strings[4].contains("F"))) {
-                    allKySubject = strings[2];
-                    allKyList.add(strings[2]);
-                }
+                String allKySubject = strings[2];
+                allKyList.add(strings[2]);
                 log.info("\t\t모든 교양 과목 : " + allKySubject);
             }
         }
