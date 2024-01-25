@@ -275,10 +275,11 @@ public class GraduateService {
         failure += checkTotalAndKy(graduate);
 
         // 전공 학점, 전필 검사
-        // ㄴ 복전 아닐 경우
-        failure += checkMajor(graduate);
-        // ㄴ 복전일 경우
-        failure += checkDoubleMajor(graduate);
+        if (graduate.isDoubleMajor()) { // 복전일 경우
+            failure += checkDoubleMajor(graduate);
+        } else { // 복전 아닐 경우
+            failure += checkMajor(graduate);
+        }
 
         // 교필 검사
         failure += checkRequiredKy(graduate);
