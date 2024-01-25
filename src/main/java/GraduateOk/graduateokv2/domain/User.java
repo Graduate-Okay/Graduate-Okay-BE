@@ -28,6 +28,7 @@ public class User extends BaseTimeEntity {
     String jwt; // jwt refresh token
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Review> reviewList = new ArrayList<>();
 
     public void changeJwt(String jwt) {

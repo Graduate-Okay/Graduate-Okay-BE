@@ -49,5 +49,6 @@ public class Subject extends BaseTimeEntity {
     Major major;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Review> reviewList = new ArrayList<>();
 }

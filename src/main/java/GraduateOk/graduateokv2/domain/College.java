@@ -22,5 +22,6 @@ public class College extends BaseTimeEntity {
     String name;
 
     @OneToMany(mappedBy = "college", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Major> majorList = new ArrayList<>();
 }

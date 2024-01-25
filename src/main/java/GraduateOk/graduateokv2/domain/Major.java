@@ -34,5 +34,6 @@ public class Major {
     Integer graduateCredit; // 전공 졸업 이수 학점
 
     @OneToMany(mappedBy = "major", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     List<Subject> subjectList = new ArrayList<>(); // 전필 목록
 }
