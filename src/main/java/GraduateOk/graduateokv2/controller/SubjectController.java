@@ -59,4 +59,14 @@ public class SubjectController {
     public BaseResponse<SubjectResponse.Store> storeSubjectData(@Valid @RequestBody SubjectRequest.Store request) {
         return BaseResponse.ok(HttpStatus.OK, subjectService.storeSubjectData(request));
     }
+
+    /**
+     * NAME : 교양 수강횟수 초기화
+     * DATE : 2024-01-26
+     */
+    @PatchMapping("/reset")
+    public BaseResponse<?> resetKyCount() {
+        subjectService.resetKyCount();
+        return BaseResponse.ok(HttpStatus.OK);
+    }
 }

@@ -118,6 +118,14 @@ public class SubjectService {
         }
     }
 
+    /**
+     * 교양 수강횟수 초기화
+     */
+    @Transactional
+    public void resetKyCount() {
+        subjectRepository.resetKyCount();
+    }
+
     // ------------------------------------------------------------------------------------------------------------
 
     // todo: 과목 관리 api
