@@ -2,6 +2,7 @@ package GraduateOk.graduateokv2.service;
 
 import GraduateOk.graduateokv2.domain.Graduate;
 import GraduateOk.graduateokv2.domain.Major;
+import GraduateOk.graduateokv2.domain.Subject;
 import GraduateOk.graduateokv2.dto.graduate.GraduateResponseDto;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
@@ -283,14 +284,13 @@ public class GraduateService {
         // 비교과 검사
         failure += checkNonSubject(graduate);
 
-        // 교선 검사 todo: 교양 카운트 증가
-        // ㄴ 인재상 검사
-        failure += checkModelKy(graduate);
-        // ㄴ 핵심역량 검사
-        failure += checkCoreKy(graduate);
-
         // 부전공 검사
-        failure += checkSubMajor(graduate);
+        if (graduate.getStudentSubMajor() != null) {
+            failure += checkSubMajor(graduate);
+        }
+
+        // 교양 수강횟수 증가 (2023년 8월 졸업부터 교양배분이수제(인재상, 핵심역량) 폐지됨에 따라 검사 로직 삭제)
+        countKy(graduate.getAllKyList());
 
         return failure;
     }
@@ -462,8 +462,9 @@ public class GraduateService {
             // 독서와토론 검사
             if (ky.equals("독서와토론")) readDebate = true;
 
-            // 글쓰기의기초 검사 (19학번 이후 소프트웨어교과목으로 대체 가능)
-            if (ky.equals("글쓰기의기초") || ky.contains("프로그래밍")) writing = true;
+            // 글쓰기의기초 검사 (19학번 이후 소프트웨어교과목(프로그래밍기초)으로 대체 가능 / 23학번부터 글기만 허용)
+            if (ky.equals("글쓰기의기초")) writing = true;
+            if (ky.contains("프로그래밍기초") && studentId < 2023) writing = true;
 
             // 영어Ⅰ,Ⅱ 검사 (아노덴 'Speaking EnglishⅠ,Ⅱ' 대체 / 19학번 이후 영어인증자 면제)
             if (ky.equals("영어Ⅰ") || ky.equals("EnglishⅠ") || engCertification || ky.equals("Essential English")) {
@@ -472,6 +473,9 @@ public class GraduateService {
             if (ky.equals("영어Ⅱ") || ky.equals("EnglishⅡ") || engCertification || ky.equals("Essential English")) {
                 eng2 = true;
             }
+
+            // 컴퓨팅사고와SW코딩 검사
+            if (ky.equals("컴퓨팅사고와SW코딩")) computing = true;
 
             // 진로와상담 검사
             if (ky.equals("진로와상담")) counseling++;
@@ -516,7 +520,7 @@ public class GraduateService {
             failure.append("교양필수 '독서와토론' 미수강\n");
         }
 
-        // 글쓰기의기초 검사 (19학번 이후 소프트웨어 과목으로 대체 가능 / 23학번부터 글기만 허용)
+        // 글쓰기의기초 검사 (19학번 이후 소프트웨어 과목(프로그래밍기초)으로 대체 가능 / 23학번부터 글기만 허용)
         if (!writing) {
             if (studentId >= 2019 && studentId <= 2022) {
                 failure.append("교양필수 '글쓰기의기초' 또는 '소프트웨어교과목' 미수강\n");
@@ -594,20 +598,6 @@ public class GraduateService {
     }
 
     /**
-     * 인재상 검사
-     */
-    private String checkModelKy(Graduate graduate) {
-        return "";
-    }
-
-    /**
-     * 핵심역량 검사
-     */
-    private String checkCoreKy(Graduate graduate) {
-        return "";
-    }
-
-    /**
      * 부전공 검사
      */
     private String checkSubMajor(Graduate graduate) {
@@ -618,5 +608,14 @@ public class GraduateService {
         }
 
         return "";
+    }
+
+    /**
+     * 교양 수강횟수 증가
+     */
+    private void countKy(List<String> allKyList) {
+        for (String name : allKyList) {
+            subjectRepository.findByName(name).ifPresent(Subject::increaseKyCount);
+        }
     }
 }

@@ -31,4 +31,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
     @Query("select s.name from Subject s where s.classification = '전공필수' and s.code like ':majorCode%'")
     List<String> findRequiredMajorByMajorCode(@Param("majorCode") String majorCode);
+
+    Optional<Subject> findByName(String name);
 }

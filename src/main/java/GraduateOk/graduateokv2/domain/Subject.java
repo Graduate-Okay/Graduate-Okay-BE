@@ -51,4 +51,8 @@ public class Subject extends BaseTimeEntity {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     List<Review> reviewList = new ArrayList<>();
+
+    public void increaseKyCount() {
+        this.kyCount++;
+    }
 }
