@@ -36,7 +36,7 @@ public class GraduateResponseDto {
                 .doubleMajorCredit(graduate.getDoubleMajorCredit())
                 .nonSubject(graduate.getNonSubject())
                 .mileage(graduate.getMileage())
-                .failure(failure)
+                .failure(failure.isEmpty() ? null : failure)
                 .build();
     }
 }
