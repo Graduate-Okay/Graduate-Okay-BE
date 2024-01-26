@@ -9,7 +9,6 @@ import GraduateOk.graduateokv2.exception.Error;
 import GraduateOk.graduateokv2.repository.MajorRepository;
 import GraduateOk.graduateokv2.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j // todo: 추후 로그 삭제
 @RequiredArgsConstructor
 @Service
 public class GraduateService {
@@ -136,7 +134,6 @@ public class GraduateService {
                 if (studentId < 2017) {
                     throw new CustomException(Error.CANNOT_CHECK_STUDENT_ID);
                 }
-                log.info("학번 : " + studentId);
             }
 
             // 학과 추출 (주전공)
@@ -148,7 +145,6 @@ public class GraduateService {
                     strings = pdfContent[i - 2].split(" ");
                 }
                 studentMajor = strings[2];
-                log.info("주전공 : " + studentMajor);
             }
 
             // 학과 추출 (복수전공)
@@ -157,7 +153,6 @@ public class GraduateService {
                 if (!strings[7].contains("복수전공Ⅱ")) {
                     studentDoubleMajor = strings[7];
                 }
-                log.info("복수전공 : " + studentDoubleMajor);
             }
 
             // 학과 추출 (부전공)
@@ -166,14 +161,12 @@ public class GraduateService {
                 if (!strings[0].contains("부전공Ⅱ")) {
                     studentSubMajor = strings[0];
                 }
-                log.info("부전공 : " + studentSubMajor);
             }
 
             // 총 취득학점 추출
             if (line.contains("총 취득학점")) {
                 String[] strings = line.split(" ");
                 totalCredit = Integer.parseInt(strings[2]);
-                log.info("총 취득학점 : " + totalCredit);
             }
 
             // 교양, 전공 이수학점 추출
@@ -181,22 +174,18 @@ public class GraduateService {
                 String[] strings = line.split(" ");
                 kyCredit = Integer.parseInt(strings[1]);
                 majorCredit = Integer.parseInt(strings[3]);
-                log.info("교양 학점 : " + kyCredit);
-                log.info("전공 학점 : " + majorCredit);
             }
 
             // 복수전공 이수학점 추출
             if (line.contains("복수:")) {
                 String[] strings = line.split(" ");
                 doubleMajorCredit = Integer.parseInt(strings[1]);
-                log.info("복수전공 학점 : " + doubleMajorCredit);
             }
 
             // 부전공 이수학점 추출
             if (line.contains("부전공:")) {
                 String[] strings = line.split(" ");
                 subMajorCredit = Integer.parseInt(strings[1]);
-                log.info("부전공 학점 : " + subMajorCredit);
             }
 
             // 수강한 전필 과목 추출
@@ -204,8 +193,6 @@ public class GraduateService {
                 String[] strings = line.split(" ");
                 String majorSubject = strings[2];
                 requiredMajorList.add(majorSubject);
-
-                log.info("\t\t수강한 전필 과목 : " + majorSubject);
             }
 
             // 수강한 교필 과목 추출
@@ -213,35 +200,29 @@ public class GraduateService {
                 String[] strings = line.split("\\s+");
                 String kySubject = strings[2];
                 requiredKyList.add(kySubject);
-
-                log.info("\t\t수강한 교필 과목 : " + kySubject);
             }
 
             // 비교과 이수 학기 카운트
             if (line.contains("학기 인정")) {
                 nonSubject++;
-                log.info("비교과 이수 학기 인정 카운트 +1 (현재 : " + nonSubject + ")");
             }
 
             // 마일리지 추출
             if (line.contains("마일리지")) {
                 String mileageString = line.substring(22);
                 mileage = Integer.parseInt(mileageString);
-                log.info("마일리지 : " + mileage);
             }
 
             // 영어인증자 추출
             if (line.contains("영어인증")) {
                 engCertification = true;
-                log.info("영어인증자");
             }
 
             // 모든 교양 과목 추출 (for 교양 카운트 증가)
             if ((line.startsWith("교선") || line.startsWith("교필")) && !line.endsWith("F") && !line.endsWith("NP")) {
                 String[] strings = line.split("\\s+");
                 String allKySubject = strings[2];
-                allKyList.add(strings[2]);
-                log.info("\t\t모든 교양 과목 : " + allKySubject);
+                allKyList.add(allKySubject);
             }
         }
 
