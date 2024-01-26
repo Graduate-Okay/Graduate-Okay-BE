@@ -288,6 +288,7 @@ public class GraduateService {
 
         int totalCredit = graduate.getTotalCredit();
         int kyCredit = graduate.getKyCredit();
+        int exceed = 0; // 교양 초과 학점
 
         // 해당 학번 과목 교양 학점 범위 (17~22학번 : 35~49학점, 23학번 : 35~45학점)
         int kyMaxCredit = 49;
@@ -302,15 +303,17 @@ public class GraduateService {
 
         // 교양 초과 학점 검사 (총 취득학점 - 초과한 교양 학점)
         if (kyCredit > kyMaxCredit) {
-            int exceed = kyCredit - kyMaxCredit;
+            exceed = kyCredit - kyMaxCredit;
             totalCredit -= exceed;
-            addString = "교양학점 " + exceed + "학점 초과되어 총 취득 학점에서 " + exceed + "학점 제외 " +
-                    "(총 취득학점 : " + totalCredit + "학점)\n";
-            failure.append(addString);
         }
 
         // 졸업 학점 검사
         if (totalCredit < graduateCredit) {
+            if (exceed > 0) {
+                addString = "교양학점 " + exceed + "학점 초과되어 총 취득 학점에서 " + exceed + "학점 제외 " +
+                        "(총 취득학점 : " + totalCredit + "학점)\n";
+                failure.append(addString);
+            }
             addString = "졸업학점 " + (graduateCredit - totalCredit) + "학점 미달\n";
             failure.append(addString);
         }
