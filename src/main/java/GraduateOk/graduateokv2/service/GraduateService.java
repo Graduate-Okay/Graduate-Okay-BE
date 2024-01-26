@@ -576,6 +576,20 @@ public class GraduateService {
      * 비교과 검사
      */
     private String checkNonSubject(Graduate graduate) {
+        int studentId = graduate.getStudentId();
+        int mileage = graduate.getMileage();
+        int nonSubject = graduate.getNonSubject();
+
+        if (studentId >= 2020) { // 20학번 이후 마일리지 300점 이상
+            if (mileage < 300) {
+                return "비교과 마일리지 " + (300 - mileage) + "점 미달\n";
+            }
+        } else if (studentId >= 2017) { // 17학번 이후 비교과 이수 학기 3학기 이상 또는 마일리지 300점 이상
+            if (mileage < 300 && nonSubject < 3) {
+                return "비교과 이수학기 " + (3 - nonSubject) + "학기 미이수 또는 비교과 마일리지 " + (300 - mileage) + "점 미달\n";
+            }
+        }
+
         return "";
     }
 
