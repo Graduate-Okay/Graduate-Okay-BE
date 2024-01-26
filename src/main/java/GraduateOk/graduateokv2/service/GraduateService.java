@@ -611,6 +611,12 @@ public class GraduateService {
      * 부전공 검사
      */
     private String checkSubMajor(Graduate graduate) {
+        int subMajorCredit = graduate.getSubMajorCredit();
+
+        if (subMajorCredit < 21) {
+            return "부전공학점 " + (21 - subMajorCredit) + "학점 미달\n";
+        }
+
         return "";
     }
 }
