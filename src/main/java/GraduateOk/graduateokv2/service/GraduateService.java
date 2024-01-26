@@ -200,7 +200,7 @@ public class GraduateService {
             }
 
             // 수강한 전필 과목 추출
-            if (line.startsWith("전필") && !line.contains("F") && !line.contains("NP")) {
+            if (line.startsWith("전필") && !line.endsWith("F") && !line.endsWith("NP")) {
                 String[] strings = line.split(" ");
                 String majorSubject = strings[2];
                 requiredMajorList.add(majorSubject);
@@ -209,7 +209,7 @@ public class GraduateService {
             }
 
             // 수강한 교필 과목 추출
-            if (line.startsWith("교필") && !line.contains("F") && !line.contains("NP")) {
+            if (line.startsWith("교필") && !line.endsWith("F") && !line.endsWith("NP")) {
                 String[] strings = line.split("\\s+");
                 String kySubject = strings[2];
                 requiredKyList.add(kySubject);
@@ -237,7 +237,7 @@ public class GraduateService {
             }
 
             // 모든 교양 과목 추출 (for 교양 카운트 증가)
-            if ((line.startsWith("교선") || line.startsWith("교필")) && !line.contains("F") && !line.contains("NP")) {
+            if ((line.startsWith("교선") || line.startsWith("교필")) && !line.endsWith("F") && !line.endsWith("NP")) {
                 String[] strings = line.split("\\s+");
                 String allKySubject = strings[2];
                 allKyList.add(strings[2]);
