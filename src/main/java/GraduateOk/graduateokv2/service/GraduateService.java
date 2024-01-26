@@ -133,6 +133,9 @@ public class GraduateService {
             // 학번 추출
             if (line.contains("학 번")) {
                 studentId = Integer.parseInt(line.substring(4, 8));
+                if (studentId < 2017) {
+                    throw new CustomException(Error.CANNOT_CHECK_STUDENT_ID);
+                }
                 log.info("학번 : " + studentId);
             }
 

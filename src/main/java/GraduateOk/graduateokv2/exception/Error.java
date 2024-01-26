@@ -18,6 +18,7 @@ public enum Error {
     CANNOT_READ_PDF(HttpStatus.BAD_REQUEST, "400_READ_PDF", "파일을 읽을 수 없습니다."),
     CANNOT_CREATE_TEMPORARY_FOLDER(HttpStatus.BAD_REQUEST, "400_TEMP_FOLDER", "임시 폴더를 상생할 수 없습니다."),
     CANNOT_DELETE_TEMPORARY_FOLDER(HttpStatus.BAD_REQUEST, "400_TEMP_FOLDER", "임시 폴더를 삭제할 수 없습니다."),
+    CANNOT_CHECK_STUDENT_ID(HttpStatus.BAD_REQUEST, "400_STUDENT_ID", "2017학번부터 검사가 가능합니다."),
 
     // 401 UNAUTHORIZED 권한없음(인증 실패)
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "권한 인증에 실패했습니다."),
