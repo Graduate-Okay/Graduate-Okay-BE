@@ -1,5 +1,6 @@
 package GraduateOk.graduateokv2.dto.common;
 
+import GraduateOk.graduateokv2.exception.Error;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,4 +17,10 @@ public class ErrorResponse {
     String code;
 
     String message;
+
+    public ErrorResponse(Error error) {
+        this.status = error.getStatus();
+        this.code = error.getCode();
+        this.message = error.getMessage();
+    }
 }

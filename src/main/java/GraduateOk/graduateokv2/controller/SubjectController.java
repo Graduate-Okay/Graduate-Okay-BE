@@ -23,8 +23,7 @@ public class SubjectController {
     private final SubjectService subjectService;
 
     /**
-     * NAME : 인기 교양 추천순 목록 조회
-     * 과목명 검색, 학점별 조회
+     * NAME : 인기 교양 추천순 목록 조회 (과목명 검색, 학점별 조회)
      * DATE : 2023-10-25
      */
     @GetMapping("")
@@ -55,7 +54,7 @@ public class SubjectController {
      * DATE : 2023-10-27
      */
     @PostMapping("/store")
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public BaseResponse<SubjectResponse.Store> storeSubjectData(@Valid @RequestBody SubjectRequest.Store request) {
         return BaseResponse.ok(HttpStatus.OK, subjectService.storeSubjectData(request));
     }
@@ -65,6 +64,7 @@ public class SubjectController {
      * DATE : 2024-01-26
      */
     @PatchMapping("/reset")
+    @PreAuthorize("hasRole('ADMIN')")
     public BaseResponse<?> resetKyCount() {
         subjectService.resetKyCount();
         return BaseResponse.ok(HttpStatus.OK);

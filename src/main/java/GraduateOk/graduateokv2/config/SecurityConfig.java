@@ -7,6 +7,7 @@ import GraduateOk.graduateokv2.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
@@ -39,7 +41,7 @@ public class SecurityConfig {
 
                 .and()
                 .authorizeRequests()
-                .anyRequest().permitAll() // todo: 추후 수정
+                .anyRequest().permitAll()
 
                 .and()
                 .sessionManagement()

@@ -10,22 +10,27 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtProvider {
 
     private final Key key;
+    private static final String TOKEN_TYPE = "Bearer";
     private static final String AUTHORITY_KEY = "auth";
     private static final long ACCESS_TOKEN_EXPIRE_TIME_MILLIS = 24L * 60L * 60L * 1000L; // 24시간
     private static final long REFRESH_TOKEN_EXPIRE_TIME_MILLIS = 30L * 24L * 60L * 60L * 1000L; // 30일
@@ -40,7 +45,7 @@ public class JwtProvider {
         long now = new Date().getTime();
 
         return TokenResponse.builder()
-                .tokenType("Bearer")
+                .tokenType(TOKEN_TYPE)
                 .accessToken(generateAccessToken(id, role, now))
                 .refreshToken(generateRefreshToken(id, now))
                 .build();
@@ -105,5 +110,16 @@ public class JwtProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    public String getJwtToken(HttpServletRequest request) {
+        String jwt = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
+                .orElseThrow(NullPointerException::new);
+
+        if (!StringUtils.hasText(jwt) || !jwt.startsWith(TOKEN_TYPE)) {
+            throw new CustomException(Error.INVALID_TOKEN);
+        }
+
+        return jwt.substring(7);
     }
 }
