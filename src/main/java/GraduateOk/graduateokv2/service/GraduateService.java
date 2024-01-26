@@ -236,7 +236,7 @@ public class GraduateService {
                 log.info("영어인증자");
             }
 
-            // 모든 교양 과목 추출 (for 인재상 & 핵심역량 검사, 교양 카운트 증가)
+            // 모든 교양 과목 추출 (for 교양 카운트 증가)
             if ((line.startsWith("교선") || line.startsWith("교필")) && !line.contains("F") && !line.contains("NP")) {
                 String[] strings = line.split("\\s+");
                 String allKySubject = strings[2];

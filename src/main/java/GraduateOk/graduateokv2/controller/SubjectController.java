@@ -24,12 +24,11 @@ public class SubjectController {
 
     /**
      * NAME : 인기 교양 추천순 목록 조회
-     * 과목명 검색, 인재상/핵심역량별 탭, 학점별 조회
+     * 과목명 검색, 학점별 조회
      * DATE : 2023-10-25
      */
     @GetMapping("")
     public BaseResponse<SubjectResponse.Rank> getSubjectRank(@RequestParam(required = false) String searchWord,
-                                                             @RequestParam(required = false) String type,
                                                              @RequestParam(required = false) Integer credit,
                                                              @PageableDefault(size = 30)
                                                              @SortDefault.SortDefaults({
@@ -38,7 +37,7 @@ public class SubjectController {
                                                              })
                                                              Pageable pageable) {
 
-        return BaseResponse.ok(HttpStatus.OK, subjectService.getSubjectRank(searchWord, type, credit, pageable));
+        return BaseResponse.ok(HttpStatus.OK, subjectService.getSubjectRank(searchWord, credit, pageable));
     }
 
     /**

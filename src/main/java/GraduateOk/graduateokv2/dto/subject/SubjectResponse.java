@@ -31,10 +31,6 @@ public class SubjectResponse {
 
         Float credit; // 학점
 
-        String kyModelType; // 교양 인재상
-
-        String kyCoreType; // 교양 핵심역량
-
         Integer kyCount; // 수강횟수
 
         public static Brief of(Subject subject) {
@@ -44,8 +40,6 @@ public class SubjectResponse {
                     .subName(subject.getSubName() == null ? null : subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
-                    .kyModelType(subject.getKyModelType() == null ? null : subject.getKyModelType().getDescription())
-                    .kyCoreType(subject.getKyCoreType() == null ? null : subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
                     .build();
         }
@@ -93,8 +87,6 @@ public class SubjectResponse {
                     .subName(subject.getSubName() == null ? null : subject.getSubName())
                     .isRequired(subject.getIsRequired())
                     .credit(subject.getCredit())
-                    .kyModelType(subject.getKyModelType() == null ? null : subject.getKyModelType().getDescription())
-                    .kyCoreType(subject.getKyCoreType() == null ? null : subject.getKyCoreType().getDescription())
                     .kyCount(subject.getKyCount())
                     .reviewCount(subject.getReviewList() == null ? 0 : subject.getReviewList().size())
                     .avgStarScore(subject.getReviewList().stream()

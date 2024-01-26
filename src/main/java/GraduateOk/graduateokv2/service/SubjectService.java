@@ -2,8 +2,6 @@ package GraduateOk.graduateokv2.service;
 
 import GraduateOk.graduateokv2.domain.Major;
 import GraduateOk.graduateokv2.domain.Subject;
-import GraduateOk.graduateokv2.domain.SubjectCoreType;
-import GraduateOk.graduateokv2.domain.SubjectModelType;
 import GraduateOk.graduateokv2.dto.subject.SubjectRequest;
 import GraduateOk.graduateokv2.dto.subject.SubjectResponse;
 import GraduateOk.graduateokv2.exception.CustomException;
@@ -12,7 +10,6 @@ import GraduateOk.graduateokv2.repository.MajorRepository;
 import GraduateOk.graduateokv2.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,21 +28,8 @@ public class SubjectService {
      * 인기 교양 추천순 목록 조회
      */
     @Transactional(readOnly = true)
-    public SubjectResponse.Rank getSubjectRank(String searchWord, String type, Integer credit, Pageable pageable) {
-        SubjectModelType modelType = null;
-        SubjectCoreType coreType = null;
-
-        if (type != null && !type.isEmpty()) {
-            if (type.equals("INTELLIGENCE") || type.equals("ORIGINALITY") || type.equals("PEACE")) {
-                modelType = SubjectModelType.valueOf(type);
-            } else {
-                coreType = SubjectCoreType.valueOf(type);
-            }
-        }
-
-        Page<Subject> subjectList = subjectRepository.getSubjectRank(searchWord, modelType, coreType, credit, pageable);
-
-        return SubjectResponse.Rank.of(subjectList);
+    public SubjectResponse.Rank getSubjectRank(String searchWord, Integer credit, Pageable pageable) {
+        return SubjectResponse.Rank.of(subjectRepository.getSubjectRank(searchWord, credit, pageable));
     }
 
     /**
@@ -58,7 +42,7 @@ public class SubjectService {
         return SubjectResponse.Detail.of(subject);
     }
 
-    /**------------------------------------------------------------------------------------------------------------*/
+    // ------------------------------------------------------------------------------------------------------------
 
     /**
      * 과목 데이터(json) DB에 저장
@@ -103,29 +87,13 @@ public class SubjectService {
                                 .code(majorCode)
                                 .build()));
 
-                // 인재상 있을 경우 enum으로 변경
-                SubjectModelType modelType = null;
-                SubjectCoreType coreType = null;
-                if (data.getKyType() != null && !data.getKyType().isEmpty()) {
-                    String kyType = data.getKyType();
-                    // 인재상, 핵심역량 구분
-                    if (kyType.contains("하는")) {
-                        modelType = SubjectModelType.descriptionToSubjectModelType(kyType);
-                    } else {
-                        coreType = SubjectCoreType.descriptionToSubjectCoreType(kyType);
-                    }
-                }
-
                 // 과목 저장
-                // todo: json 데이터에는 인재상만 있어서 핵심역량은 엑셀표 기준으로 추가 저장 필요
                 subjectRepository.save(Subject.builder()
                         .name(data.getCourseName())
                         .code(code)
                         .classification(classification)
                         .isRequired(data.getClassification().contains("필수"))
                         .credit(getCreditFromString(data.getCredit()))
-                        .kyModelType(modelType)
-                        .kyCoreType(coreType)
                         .major(major)
                         .build()
                 );
@@ -150,9 +118,7 @@ public class SubjectService {
         }
     }
 
-    /**------------------------------------------------------------------------------------------------------------*/
+    // ------------------------------------------------------------------------------------------------------------
 
-    /**
-     * 과목 관리
-     */
+    // todo: 과목 관리 api
 }

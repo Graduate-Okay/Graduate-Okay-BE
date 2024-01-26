@@ -32,12 +32,6 @@ public class Subject extends BaseTimeEntity {
 
     Float credit; // 학점
 
-    @Enumerated(EnumType.STRING)
-    SubjectModelType kyModelType; // 교양 인재상
-
-    @Enumerated(EnumType.STRING)
-    SubjectCoreType kyCoreType; // 교양 핵심역량
-
     @Builder.Default
     Integer kyCount = 0; // 교양 수강횟수
 
