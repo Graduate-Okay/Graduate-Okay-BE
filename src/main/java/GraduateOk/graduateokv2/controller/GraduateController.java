@@ -5,6 +5,7 @@ import GraduateOk.graduateokv2.dto.graduate.GraduateResponseDto;
 import GraduateOk.graduateokv2.service.GraduateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -14,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/graduate-ok")
-//@PreAuthorize("isAuthenticated()")
 public class GraduateController {
 
     private final GraduateService graduateService;
@@ -24,6 +24,7 @@ public class GraduateController {
      * DATE : 2023-11-05
      */
     @PostMapping("")
+    @PreAuthorize("hasRole('USER')")
     public BaseResponse<GraduateResponseDto> getGraduateOkResult(@RequestPart(name = "file") MultipartFile multipartFile) {
         return BaseResponse.ok(HttpStatus.OK, graduateService.isGraduateOk(multipartFile));
     }
