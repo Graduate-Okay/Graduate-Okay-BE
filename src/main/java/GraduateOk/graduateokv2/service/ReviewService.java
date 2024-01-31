@@ -69,4 +69,11 @@ public class ReviewService {
             throw new CustomException(Error.FORBIDDEN);
         }
     }
+
+    @Transactional
+    public void deleteReviews(ReviewRequest.Delete request) {
+        for (Long id : request.getDeleteIdList()) {
+            reviewRepository.findById(id).ifPresent(reviewRepository::delete);
+        }
+    }
 }

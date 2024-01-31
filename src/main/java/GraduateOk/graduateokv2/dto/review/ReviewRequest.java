@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.UtilityClass;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @UtilityClass
 public class ReviewRequest {
@@ -29,5 +30,15 @@ public class ReviewRequest {
 
         @NotNull
         Float starScore;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Delete {
+
+        @NotNull
+        List<Long> deleteIdList;
     }
 }

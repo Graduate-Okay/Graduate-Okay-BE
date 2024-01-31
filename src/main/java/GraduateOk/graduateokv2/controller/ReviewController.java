@@ -50,7 +50,13 @@ public class ReviewController {
     }
 
     /**
-     * NAME : 리뷰 삭제 (관리자)
-     * DATE : 2023-10-23
+     * NAME : 리뷰 다건 삭제 (관리자)
+     * DATE : 2024-01-31
      */
+    @DeleteMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
+    public BaseResponse<?> deleteReviews(@Valid @RequestBody ReviewRequest.Delete request) {
+        reviewService.deleteReviews(request);
+        return BaseResponse.ok(HttpStatus.OK);
+    }
 }
