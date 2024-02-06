@@ -24,7 +24,6 @@ import java.security.Key;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Optional;
 
 @Component
 public class JwtProvider {
@@ -113,13 +112,12 @@ public class JwtProvider {
     }
 
     public String getJwtToken(HttpServletRequest request) {
-        String jwt = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .orElseThrow(NullPointerException::new);
+        String bearToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (!StringUtils.hasText(jwt) || !jwt.startsWith(TOKEN_TYPE)) {
-            throw new CustomException(Error.INVALID_TOKEN);
+        if (StringUtils.hasText(bearToken) && bearToken.startsWith(TOKEN_TYPE)) {
+            return bearToken.substring(7);
         }
 
-        return jwt.substring(7);
+        return null;
     }
 }
