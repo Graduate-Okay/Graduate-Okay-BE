@@ -24,6 +24,5 @@ sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 sudo systemctl start nginx
 
 # java 실행
-sudo chmod 777 /home/ec2-user/graduateokv2/graduate-ok-v2.jar
-FORMATTED_DATE=$(date +'%y%m%d')
-sudo nohup java -jar /home/ec2-user/graduateokv2/graduate-ok-v2.jar > /home/ec2-user/log$FORMATTED_DATE.log 2>&1 &
+sudo chmod 777 /home/ec2-user/deploy/graduate-ok-v2.jar
+sudo nohup java -jar /home/ec2-user/deploy/graduate-ok-v2.jar > /home/ec2-user/server.log 2>&1 &
