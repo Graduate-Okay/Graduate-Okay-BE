@@ -2,13 +2,16 @@ package GraduateOk.graduateokv2.service;
 
 import GraduateOk.graduateokv2.domain.Graduate;
 import GraduateOk.graduateokv2.domain.Major;
+import GraduateOk.graduateokv2.domain.Record;
 import GraduateOk.graduateokv2.domain.Subject;
 import GraduateOk.graduateokv2.dto.graduate.GraduateResponseDto;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
 import GraduateOk.graduateokv2.repository.MajorRepository;
+import GraduateOk.graduateokv2.repository.RecordRepository;
 import GraduateOk.graduateokv2.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.stereotype.Service;
@@ -22,29 +25,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class GraduateService {
 
     private final MajorRepository majorRepository;
     private final SubjectRepository subjectRepository;
+    private final RecordRepository recordRepository;
 
     @Transactional
     public GraduateResponseDto isGraduateOk(MultipartFile multipartFile) {
-        // 파일 읽어오기
         String pdf = extractPdfContent(multipartFile);
-        if (pdf.isEmpty()) throw new CustomException(Error.NOT_FOUND_PDF_CONTENT);
+        validatePdf(pdf);
+        log.info("[pdf] : " + pdf);
 
-        // 한신대학교 학업성적확인서 PDF인지 검사
-        if (!pdf.contains("포털>한신종합정보>성적")) {
-            throw new CustomException(Error.BAD_PDF);
-        }
-
-        // 기본 정보 추출
         Graduate graduate = extractBasicInfo(pdf);
+        log.info("[graduate] : " + graduate.toString());
 
-        // 검사 및 부족한 졸업요건 저장
         String failure = checkAndGetFailure(graduate);
+        log.info("[failure] : " + pdf);
+
+        increaseCount((long) graduate.getStudentId());
 
         return GraduateResponseDto.of(graduate, failure);
     }
@@ -100,6 +102,20 @@ public class GraduateService {
     }
 
     /**
+     * PDF 검사
+     */
+    private void validatePdf(String pdf) {
+        if (pdf.isEmpty()) {
+            throw new CustomException(Error.NOT_FOUND_PDF_CONTENT);
+        }
+
+        // 한신대학교 학업성적확인서 PDF인지 검사
+        if (!pdf.contains("포털>한신종합정보>성적")) {
+            throw new CustomException(Error.BAD_PDF);
+        }
+    }
+
+    /**
      * 기본 정보 추출
      */
     private Graduate extractBasicInfo(String pdf) {
@@ -127,6 +143,7 @@ public class GraduateService {
 
         for (int i = 0; i < pdfContent.length; i++) {
             String line = pdfContent[i];
+            log.info("[line - " + (i + 1) + "] : " + line);
 
             // 학번 추출
             if (line.contains("학 번")) {
@@ -604,5 +621,15 @@ public class GraduateService {
         for (String name : allKyList) {
             subjectRepository.findByName(name).ifPresent(Subject::increaseKyCount);
         }
+    }
+
+    /**
+     * 이용 횟수 증가
+     */
+    private void increaseCount(Long year) {
+        Record record = recordRepository.findById(year)
+                .orElse(Record.builder().year(year).count(0).build());
+        record.increaseCount();
+        recordRepository.save(record);
     }
 }
