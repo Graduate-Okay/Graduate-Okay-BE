@@ -44,9 +44,10 @@ public class GraduateService {
         log.info("[graduate] : " + graduate.toString());
 
         String failure = checkAndGetFailure(graduate);
-        log.info("[failure] : " + pdf);
+        log.info("[failure] : " + failure);
 
         increaseCount((long) graduate.getStudentId());
+        log.info("[increase count]");
 
         return GraduateResponseDto.of(graduate, failure);
     }

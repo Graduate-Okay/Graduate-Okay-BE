@@ -3,10 +3,7 @@ package GraduateOk.graduateokv2.domain;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Getter
 @Builder
@@ -22,6 +19,7 @@ public class Notice extends BaseTimeEntity {
 
     String title;
 
+    @Column(length = 2000)
     String content;
 
     public void changeTitle(String title) {

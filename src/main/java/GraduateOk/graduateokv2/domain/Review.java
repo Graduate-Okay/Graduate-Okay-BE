@@ -27,6 +27,7 @@ public class Review extends BaseTimeEntity {
 
     String title;
 
+    @Column(length = 1000)
     String content;
 
     Float starScore;
