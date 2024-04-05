@@ -8,6 +8,7 @@ import GraduateOk.graduateokv2.exception.Error;
 import GraduateOk.graduateokv2.repository.MajorRepository;
 import GraduateOk.graduateokv2.repository.RecordRepository;
 import GraduateOk.graduateokv2.repository.SubjectRepository;
+import GraduateOk.graduateokv2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,12 +29,17 @@ import java.util.List;
 @Service
 public class GraduateService {
 
+    private final UserRepository userRepository;
     private final MajorRepository majorRepository;
     private final SubjectRepository subjectRepository;
     private final RecordRepository recordRepository;
 
+    private final LoginService loginService;
+
     @Transactional
     public GraduateResponseDto isGraduateOk(MultipartFile multipartFile) {
+        User user = getUser();
+
         String pdf = extractPdfContent(multipartFile);
         validatePdf(pdf);
         log.info("[pdf] : " + pdf);
@@ -44,10 +50,25 @@ public class GraduateService {
         String failure = checkAndGetFailure(graduate);
         log.info("[failure] : " + failure);
 
-        increaseCount((long) graduate.getStudentId());
-        log.info("[increase count]");
+        if (!user.getIsChecked()) {
+            countKy(graduate.getAllKyList());
+
+            increaseCount((long) graduate.getStudentId());
+            log.info("[increase count]");
+
+            setUserIsChecked(user);
+        }
 
         return GraduateResponseDto.of(graduate, failure);
+    }
+
+    /**
+     * 사용자 조회
+     */
+    private User getUser() {
+        Long userId = loginService.getLoginUserId();
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
     }
 
     /**
@@ -325,9 +346,6 @@ public class GraduateService {
         if (graduate.getStudentSubMajor() != null) {
             failure += checkSubMajor(graduate);
         }
-
-        // 교양 수강횟수 증가 (2023년 8월 졸업부터 교양배분이수제(인재상, 핵심역량) 폐지됨에 따라 검사 로직 삭제)
-        countKy(graduate.getAllKyList());
 
         return failure;
     }
@@ -651,7 +669,7 @@ public class GraduateService {
     }
 
     /**
-     * 교양 수강횟수 증가
+     * 교양 수강횟수 증가 (2023년 8월 졸업부터 교양배분이수제(인재상, 핵심역량) 폐지됨에 따라 검사 로직 삭제)
      */
     private void countKy(List<String> allKyList) {
         for (String name : allKyList) {
@@ -667,5 +685,13 @@ public class GraduateService {
                 .orElse(Record.builder().year(year).count(0).build());
         record.increaseCount();
         recordRepository.save(record);
+    }
+
+    /**
+     * 사용자 졸업가능 검사 여부 변경
+     */
+    private void setUserIsChecked(User user) {
+        user.checkGraduateOk();
+        userRepository.save(user);
     }
 }

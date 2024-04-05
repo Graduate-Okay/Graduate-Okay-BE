@@ -27,6 +27,9 @@ public class User extends BaseTimeEntity {
 
     String jwt; // jwt refresh token
 
+    @Builder.Default
+    Boolean isChecked = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     List<Review> reviewList = new ArrayList<>();
@@ -41,5 +44,9 @@ public class User extends BaseTimeEntity {
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void checkGraduateOk() {
+        this.isChecked = true;
     }
 }
