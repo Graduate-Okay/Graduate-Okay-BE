@@ -46,7 +46,17 @@ public enum Error {
     ALREADY_SAVED_SUBJECT(HttpStatus.CONFLICT, "409_SUBJECT", "이미 저장된 과목입니다."),
 
     // 500 INTERNAL_SERVER_ERROR 서버 내부 에러
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "서버 내부 에러입니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "서버 내부 에러입니다."),
+    EXTRACT_STUDENT_ID_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "학번 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_MAJOR_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "주전공 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_DOUBLE_MAJOR_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "복수전공 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_SUB_MAJOR_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "부전공 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_TOTAL_CREDIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "총 취득학점 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_CREDIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "교양/전공 취득학점 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_DOUBLE_MAJOR_CREDIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "복수전공 취득학점 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_SUB_MAJOR_CREDIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "부전공 취득학점 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_MAJOR_SUBJECT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "전필 과목 추출 에러입니다. 관리자에게 문의해 주세요."),
+    EXTRACT_KY_SUBJECT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "교양 과목 추출 에러입니다. 관리자에게 문의해 주세요.");
 
     private final HttpStatus status;
     private final String code;

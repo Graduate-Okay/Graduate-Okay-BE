@@ -1,9 +1,7 @@
 package GraduateOk.graduateokv2.service;
 
-import GraduateOk.graduateokv2.domain.Graduate;
-import GraduateOk.graduateokv2.domain.Major;
+import GraduateOk.graduateokv2.domain.*;
 import GraduateOk.graduateokv2.domain.Record;
-import GraduateOk.graduateokv2.domain.Subject;
 import GraduateOk.graduateokv2.dto.graduate.GraduateResponseDto;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
@@ -147,77 +145,121 @@ public class GraduateService {
             log.info("[line - " + (i + 1) + "] : " + line);
 
             // 학번 추출
-            if (line.contains("학 번")) {
-                studentId = Integer.parseInt(line.substring(4, 8));
-                if (studentId < 2017) {
-                    throw new CustomException(Error.CANNOT_CHECK_STUDENT_ID);
+            try {
+                if (line.contains("학 번")) {
+                    studentId = Integer.parseInt(line.substring(4, 8));
+                    if (studentId < 2017) {
+                        throw new CustomException(Error.CANNOT_CHECK_STUDENT_ID);
+                    }
                 }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_STUDENT_ID_ERROR);
             }
 
             // 학과 추출 (주전공)
-            if (line.contains("부전공Ⅰ")) {
-                String[] strings;
-                if (studentId < 2022) {
-                    strings = pdfContent[i - 1].split(" ");
-                } else {
-                    strings = pdfContent[i - 2].split(" ");
+            try {
+                if (line.contains("부전공Ⅰ")) {
+                    String[] strings;
+                    if (pdfContent[i - 1].contains("교과과정")) {
+                        strings = pdfContent[i - 2].split(" ");
+                    } else {
+                        strings = pdfContent[i - 1].split(" ");
+                    }
+                    studentMajor = strings[2];
                 }
-                studentMajor = strings[2];
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_MAJOR_ERROR);
             }
 
             // 학과 추출 (복수전공)
-            if (line.contains("복수전공Ⅰ")) {
-                String[] strings = line.split(" ");
-                if (!strings[7].contains("복수전공Ⅱ")) {
-                    studentDoubleMajor = strings[7];
+            try {
+                if (line.contains("복수전공Ⅰ")) {
+                    String[] strings = line.split(" ");
+                    if (!strings[7].contains("복수전공Ⅱ")) {
+                        studentDoubleMajor = strings[7];
+                    }
                 }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_DOUBLE_MAJOR_ERROR);
             }
 
             // 학과 추출 (부전공)
-            if (line.contains("부전공Ⅱ")) {
-                String[] strings = line.split(" ");
-                if (!strings[0].contains("부전공Ⅱ")) {
-                    studentSubMajor = strings[0];
+            try {
+                if (line.contains("부전공Ⅱ")) {
+                    String[] strings = line.split(" ");
+                    if (!strings[0].contains("부전공Ⅱ")) {
+                        studentSubMajor = strings[0];
+                    }
                 }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_SUB_MAJOR_ERROR);
             }
 
             // 총 취득학점 추출
-            if (line.contains("총 취득학점")) {
-                String[] strings = line.split(" ");
-                totalCredit = Integer.parseInt(strings[2]);
+            try {
+                if (line.contains("총 취득학점")) {
+                    String[] strings = line.split(" ");
+                    totalCredit = Integer.parseInt(strings[2]);
+                }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_TOTAL_CREDIT_ERROR);
             }
 
             // 교양, 전공 이수학점 추출
-            if (line.contains("교양: ") && line.contains("전공: ")) {
-                String[] strings = line.split(" ");
-                kyCredit = Integer.parseInt(strings[1]);
-                majorCredit = Integer.parseInt(strings[3]);
+            try {
+                if (line.contains("교양: ") && line.contains("전공: ")) {
+                    String[] strings = line.split(" ");
+                    kyCredit = Integer.parseInt(strings[1]);
+                    majorCredit = Integer.parseInt(strings[3]);
+                }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_CREDIT_ERROR);
             }
 
             // 복수전공 이수학점 추출
-            if (line.contains("복수:")) {
-                String[] strings = line.split(" ");
-                doubleMajorCredit = Integer.parseInt(strings[1]);
+            try {
+                if (line.contains("복수:")) {
+                    String[] strings = line.split(" ");
+                    doubleMajorCredit = Integer.parseInt(strings[1]);
+                }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_DOUBLE_MAJOR_CREDIT_ERROR);
             }
 
             // 부전공 이수학점 추출
-            if (line.contains("부전공:")) {
-                String[] strings = line.split(" ");
-                subMajorCredit = Integer.parseInt(strings[1]);
+            try {
+                if (line.contains("부전공:")) {
+                    String[] strings = line.split(" ");
+                    subMajorCredit = Integer.parseInt(strings[1]);
+                }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_SUB_MAJOR_CREDIT_ERROR);
             }
 
             // 수강한 전필 과목 추출
-            if (line.startsWith("전필") && !line.endsWith("F") && !line.endsWith("NP")) {
-                String[] strings = line.split(" ");
-                String majorSubject = strings[2];
-                requiredMajorList.add(majorSubject);
+            try {
+                if (line.startsWith("전필") && !line.endsWith("F") && !line.endsWith("NP")) {
+                    String[] strings = line.split(" ");
+                    String majorSubject = strings[2];
+                    requiredMajorList.add(majorSubject);
+                }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_MAJOR_SUBJECT_ERROR);
             }
 
-            // 수강한 교필 과목 추출
-            if (line.startsWith("교필") && !line.endsWith("F") && !line.endsWith("NP")) {
-                String[] strings = line.split("\\s+");
-                String kySubject = strings[2];
-                requiredKyList.add(kySubject);
+            // 수강한 교필 과목 추출 & 모든 교양 과목 추출 (for 교양 카운트 증가)
+            try {
+                if ((line.startsWith("교선") || line.startsWith("교필")) && !line.endsWith("F") && !line.endsWith("NP")) {
+                    String[] strings = line.split("\\s+");
+                    String kySubject = strings[2];
+                    allKyList.add(kySubject);
+
+                    if (line.startsWith("교필")) {
+                        requiredKyList.add(kySubject);
+                    }
+                }
+            } catch (Exception e) {
+                throw new CustomException(Error.EXTRACT_KY_SUBJECT_ERROR);
             }
 
             // 비교과 이수 학기 카운트
@@ -234,13 +276,6 @@ public class GraduateService {
             // 영어인증자 추출
             if (line.contains("영어인증")) {
                 engCertification = true;
-            }
-
-            // 모든 교양 과목 추출 (for 교양 카운트 증가)
-            if ((line.startsWith("교선") || line.startsWith("교필")) && !line.endsWith("F") && !line.endsWith("NP")) {
-                String[] strings = line.split("\\s+");
-                String allKySubject = strings[2];
-                allKyList.add(allKySubject);
             }
         }
 
