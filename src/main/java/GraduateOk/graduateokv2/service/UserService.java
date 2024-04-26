@@ -136,6 +136,63 @@ public class UserService {
     }
 
     /**
+     * 비밀번호 변경 이메일 발송
+     */
+    @Transactional(readOnly = true)
+    public void sendPasswordEmail(UserRequest.Email request) {
+        String email = request.getEmail();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
+
+        // 인증번호 생성
+        String key = createKey();
+
+        // 비밀번호 변경 URL 생성
+        String url = "https://hs-graduate-ok.site/password?email=" + user.getEmail() + "&key=" + key;
+
+        // 이메일 발송
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            mimeMessageHelper.setTo(email);
+            mimeMessageHelper.setSubject("졸업가능 비밀번호 변경");
+            mimeMessageHelper.setText("<p>아래 링크로 접속해 비밀번호를 변경해 주세요.</p><p>" + url + "</p>", true);
+            javaMailSender.send(mimeMessage);
+
+            // redis 저장
+            redisUtil.setDateExpire(key, email, 300000L); // 제한시간 5분
+
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 새 비밀번호로 변경
+     */
+    @Transactional
+    public void updatePassword(UserRequest.UpdatePassword request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
+
+        String email = redisUtil.getData(request.getKey());
+
+        if (email == null || !email.equals(user.getEmail())) {
+            throw new CustomException(Error.BAD_AUTH_NUMBER);
+        }
+
+        redisUtil.deleteData(request.getKey());
+
+        if (request.getPassword().length() < 8) {
+            throw new CustomException(Error.BAD_PASSWORD);
+        }
+
+        String encPassword = passwordEncoder.encode(request.getPassword());
+        user.changePassword(encPassword);
+        userRepository.save(user);
+    }
+
+    /**
      * 로그인
      */
     @Transactional

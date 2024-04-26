@@ -49,6 +49,26 @@ public class UserController {
     }
 
     /**
+     * NAME : 비밀번호 변경 이메일 발송
+     * DATE : 2024-04-26
+     */
+    @PostMapping("/password-email")
+    public BaseResponse<?> sendPasswordEmail(@Valid @RequestBody UserRequest.Email request) {
+        userService.sendPasswordEmail(request);
+        return BaseResponse.ok(HttpStatus.OK);
+    }
+
+    /**
+     * NAME : 새 비밀번호로 변경
+     * DATE : 2024-04-26
+     */
+    @PatchMapping("/password")
+    public BaseResponse<?> updatePassword(@Valid @RequestBody UserRequest.UpdatePassword request) {
+        userService.updatePassword(request);
+        return BaseResponse.ok(HttpStatus.OK);
+    }
+
+    /**
      * NAME : 로그인
      * DATE : 2023-10-25
      */

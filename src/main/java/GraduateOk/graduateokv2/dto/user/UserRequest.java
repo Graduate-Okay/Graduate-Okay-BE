@@ -56,4 +56,20 @@ public class UserRequest {
 
         String refreshToken;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class UpdatePassword {
+
+        @NotNull
+        String email;
+
+        @NotNull
+        String key;
+
+        @NotNull
+        String password;
+    }
 }
