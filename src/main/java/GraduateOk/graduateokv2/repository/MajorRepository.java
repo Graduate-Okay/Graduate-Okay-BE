@@ -11,6 +11,6 @@ public interface MajorRepository extends JpaRepository<Major, Long> {
 
     Optional<Major> findByName(String name);
 
-    @Query("select m from Major m where m.name like %:name% and m.year = :year")
+    @Query("select m from Major m where m.name like :name% and m.year = :year")
     Optional<Major> findByNameAndYear(@Param("name") String name, @Param("year") Integer year);
 }
