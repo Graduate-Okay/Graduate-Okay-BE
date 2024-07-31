@@ -182,11 +182,16 @@ public class GraduateService {
                 if (line.contains("부전공Ⅰ")) {
                     String[] strings;
                     if (pdfContent[i - 1].contains("교과과정")) {
-                        strings = pdfContent[i - 2].split(" ");
+                        if (pdfContent[i - 2].contains("학부")) {
+                            studentMajor = pdfContent[i - 3].trim() + "학부";
+                        } else {
+                            strings = pdfContent[i - 2].split(" ");
+                            studentMajor = strings[2];
+                        }
                     } else {
                         strings = pdfContent[i - 1].split(" ");
+                        studentMajor = strings[2];
                     }
-                    studentMajor = strings[2];
                 }
             } catch (Exception e) {
                 throw new CustomException(Error.EXTRACT_MAJOR_ERROR);
