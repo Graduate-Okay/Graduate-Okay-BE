@@ -53,6 +53,9 @@ dependencies {
 
     // pdfbox
     implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+
+    // slack
+    implementation 'net.gpedro.integrations.slack:slack-webhook:1.4.0'
 }
 
 //tasks.named('test') {
