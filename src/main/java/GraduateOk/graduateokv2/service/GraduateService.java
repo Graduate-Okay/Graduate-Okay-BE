@@ -678,7 +678,10 @@ public class GraduateService {
      */
     private void countKy(List<String> allKyList) {
         for (String name : allKyList) {
-            subjectRepository.findByName(name).ifPresent(Subject::increaseKyCount);
+            subjectRepository.findByName(name).ifPresent(subject -> {
+                subject.increaseKyCount();
+                subjectRepository.save(subject);
+            });
         }
     }
 
