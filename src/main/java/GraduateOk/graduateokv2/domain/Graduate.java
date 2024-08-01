@@ -57,8 +57,8 @@ public class Graduate {
     public String toString() {
         return "학번 : " + studentId + "\n" +
                 "주전공 : " + studentMajor + " \n" +
-                "부전공 : " + studentDoubleMajor + "\n" +
-                "복수전공 : " + studentSubMajor + "\n" +
+                "복수전공 : " + studentDoubleMajor + "\n" +
+                "부전공 : " + studentSubMajor + "\n" +
                 "복수전공 여부 : " + isDoubleMajor + "\n\n" +
                 "총 취득 학점 : " + totalCredit + "\n" +
                 "교양 학점 : " + kyCredit + "\n" +

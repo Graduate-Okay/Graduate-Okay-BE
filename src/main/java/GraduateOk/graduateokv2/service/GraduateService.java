@@ -41,14 +41,14 @@ public class GraduateService {
         User user = getUser();
 
         String pdf = extractPdfContent(multipartFile);
+        log.info("=== PDF EXTRACT TEXT ===\n" + pdf);
         validatePdf(pdf);
-        log.info("[pdf] : " + pdf);
 
         Graduate graduate = extractBasicInfo(pdf);
-        log.info("[graduate] : " + graduate.toString());
+        log.info("=== GRADUATE EXTRACT BASIC INFO ===\n" + graduate.toString());
 
         String failure = checkAndGetFailure(graduate);
-        log.info("[failure] : " + failure);
+        log.info("=== FAILURE ===\n" + failure);
 
         if (!user.getIsChecked()) {
             countKy(graduate.getAllKyList());
