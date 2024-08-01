@@ -182,7 +182,7 @@ public class GraduateService {
                 if (line.contains("부전공Ⅰ")) {
                     String[] strings;
                     if (pdfContent[i - 1].contains("교과과정")) {
-                        if (pdfContent[i - 2].contains("학부")) {
+                        if (pdfContent[i - 2].equals("학부")) {
                             studentMajor = pdfContent[i - 3].trim() + "학부";
                         } else {
                             strings = pdfContent[i - 2].split(" ");
