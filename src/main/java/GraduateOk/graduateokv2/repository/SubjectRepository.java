@@ -25,7 +25,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Query("select s from Subject s where s.name = :name or s.code = :code")
     Optional<Subject> findByNameOrCode(@Param("name") String name, @Param("code") String code);
 
-    @Query("select s.name from Subject s where s.classification = '전공필수' and s.code like ':majorCode%'")
+    @Query("select s.name from Subject s where s.classification = '전공필수' and s.code like :majorCode%")
     List<String> findRequiredMajorByMajorCode(@Param("majorCode") String majorCode);
 
     Optional<Subject> findByName(String name);

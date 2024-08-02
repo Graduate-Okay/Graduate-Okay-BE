@@ -1,7 +1,9 @@
 package GraduateOk.graduateokv2.service;
 
-import GraduateOk.graduateokv2.domain.*;
+import GraduateOk.graduateokv2.domain.Graduate;
+import GraduateOk.graduateokv2.domain.Major;
 import GraduateOk.graduateokv2.domain.Record;
+import GraduateOk.graduateokv2.domain.User;
 import GraduateOk.graduateokv2.dto.graduate.GraduateResponseDto;
 import GraduateOk.graduateokv2.exception.CustomException;
 import GraduateOk.graduateokv2.exception.Error;
@@ -15,6 +17,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -371,8 +374,7 @@ public class GraduateService {
         if (graduate.getStudentId() >= 2023) kyMaxCredit = 45;
 
         // 학과 정보 가져오기
-        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
-                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+        Major major = getMajor(graduate.getStudentMajor(), graduate.getStudentId());
 
         // 해당 학과 졸업학점 가져오기
         int graduateCredit = major.getGraduateCredit();
@@ -414,13 +416,12 @@ public class GraduateService {
         List<String> userRequiredMajorList = graduate.getRequiredMajorList();
 
         // 학과 정보 가져오기
-        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
-                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+        Major major = getMajor(graduate.getStudentMajor(), graduate.getStudentId());
 
         // 해당 학과 전공최소학점 가져오기
         int majorMinCredit = major.getMinCredit();
 
-        // 해당 학과 전공필수 목록 가져오기 todo: 추후 해당 전공 정보의 전필 목록 가져오는 걸로 변경
+        // 해당 학과 전공필수 목록 가져오기
         List<String> requiredMajorList = subjectRepository.findRequiredMajorByMajorCode(major.getCode());
 
         // 전공 최소이수학점 검사
@@ -451,12 +452,10 @@ public class GraduateService {
         List<String> userRequiredMajorList = graduate.getRequiredMajorList();
 
         // 학과 정보 가져오기
-        Major major = majorRepository.findByNameAndYear(graduate.getStudentMajor(), graduate.getStudentId())
-                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
-        Major doubleMajor = majorRepository.findByNameAndYear(graduate.getStudentDoubleMajor(), graduate.getStudentId())
-                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_YEAR_MAJOR));
+        Major major = getMajor(graduate.getStudentMajor(), graduate.getStudentId());
+        Major doubleMajor = getDoubleMajor(graduate.getStudentDoubleMajor(), graduate.getStudentId());
 
-        // 해당 학과 전공필수 목록 가져오기 todo: 추후 해당 전공 정보의 전필 목록 가져오는 걸로 변경
+        // 해당 학과 전공필수 목록 가져오기
         List<String> requiredMajorList = subjectRepository.findRequiredMajorByMajorCode(major.getCode());
         requiredMajorList.addAll(subjectRepository.findRequiredMajorByMajorCode(doubleMajor.getCode()));
 
@@ -701,5 +700,31 @@ public class GraduateService {
     private void setUserIsChecked(User user) {
         user.checkGraduateOk();
         userRepository.save(user);
+    }
+
+    /**
+     * 전공 조회
+     */
+    private Major getMajor(String studentMajor, Integer studentId) {
+        List<Major> majorList = majorRepository.findByNameAndYear(studentMajor, studentId);
+
+        if (ObjectUtils.isEmpty(majorList)) {
+            throw new CustomException(Error.NOT_FOUND_YEAR_MAJOR);
+        }
+
+        return majorList.get(0);
+    }
+
+    /**
+     * 복수전공 조회
+     */
+    private Major getDoubleMajor(String studentMajor, Integer studentId) {
+        List<Major> doubleMajorList = majorRepository.findDoubleMajor(studentMajor, studentId);
+
+        if (ObjectUtils.isEmpty(doubleMajorList)) {
+            throw new CustomException(Error.NOT_FOUND_YEAR_MAJOR);
+        }
+
+        return doubleMajorList.get(0);
     }
 }
