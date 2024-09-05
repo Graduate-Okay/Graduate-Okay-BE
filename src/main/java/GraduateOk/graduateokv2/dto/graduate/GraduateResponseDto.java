@@ -13,13 +13,13 @@ public class GraduateResponseDto {
 
     Boolean isGraduateOk; // 졸업 가능 여부
 
-    Integer totalCredit; // 총 취득 학점
+    Double totalCredit; // 총 취득 학점
 
-    Integer kyCredit; // 총 교양 학점
+    Double kyCredit; // 총 교양 학점
 
-    Integer majorCredit; // 주전공 학점
+    Double majorCredit; // 주전공 학점
 
-    Integer doubleMajorCredit; // 복수전공 학점 (복전 아닐 경우 0)
+    Double doubleMajorCredit; // 복수전공 학점 (복전 아닐 경우 0)
 
     Integer nonSubject; // 비교과 이수 학기
 

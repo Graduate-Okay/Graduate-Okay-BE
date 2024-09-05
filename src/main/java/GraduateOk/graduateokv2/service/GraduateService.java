@@ -148,11 +148,11 @@ public class GraduateService {
         String studentDoubleMajor = null; // 복수전공
         String studentSubMajor = null; // 부전공
 
-        int totalCredit = 0; // 총 취득 학점
-        int kyCredit = 0; // 교양 학점
-        int majorCredit = 0; // 전공 학점
-        int doubleMajorCredit = 0; // 복수 전공 학점
-        int subMajorCredit = 0; // 부전공 학점
+        double totalCredit = 0; // 총 취득 학점
+        double kyCredit = 0; // 교양 학점
+        double majorCredit = 0; // 전공 학점
+        double doubleMajorCredit = 0; // 복수 전공 학점
+        double subMajorCredit = 0; // 부전공 학점
 
         int nonSubject = 0; // 비교과 이수 학기
         int mileage = 0; // 비교과 마일리지
@@ -228,7 +228,7 @@ public class GraduateService {
             try {
                 if (line.contains("총 취득학점")) {
                     String[] strings = line.split(" ");
-                    totalCredit = Integer.parseInt(strings[2]);
+                    totalCredit = Double.parseDouble(strings[2]);
                 }
             } catch (Exception e) {
                 throw new CustomException(Error.EXTRACT_TOTAL_CREDIT_ERROR);
@@ -238,8 +238,8 @@ public class GraduateService {
             try {
                 if (line.contains("교양: ") && line.contains("전공: ")) {
                     String[] strings = line.split(" ");
-                    kyCredit = Integer.parseInt(strings[1]);
-                    majorCredit = Integer.parseInt(strings[3]);
+                    kyCredit = Double.parseDouble(strings[1]);
+                    majorCredit = Double.parseDouble(strings[3]);
                 }
             } catch (Exception e) {
                 throw new CustomException(Error.EXTRACT_CREDIT_ERROR);
@@ -249,7 +249,7 @@ public class GraduateService {
             try {
                 if (line.contains("복수:")) {
                     String[] strings = line.split(" ");
-                    doubleMajorCredit = Integer.parseInt(strings[1]);
+                    doubleMajorCredit = Double.parseDouble(strings[1]);
                 }
             } catch (Exception e) {
                 throw new CustomException(Error.EXTRACT_DOUBLE_MAJOR_CREDIT_ERROR);
@@ -259,7 +259,7 @@ public class GraduateService {
             try {
                 if (line.contains("부전공:")) {
                     String[] strings = line.split(" ");
-                    subMajorCredit = Integer.parseInt(strings[1]);
+                    subMajorCredit = Double.parseDouble(strings[1]);
                 }
             } catch (Exception e) {
                 throw new CustomException(Error.EXTRACT_SUB_MAJOR_CREDIT_ERROR);
@@ -365,9 +365,9 @@ public class GraduateService {
         StringBuilder failure = new StringBuilder();
         String addString;
 
-        int totalCredit = graduate.getTotalCredit();
-        int kyCredit = graduate.getKyCredit();
-        int exceed = 0; // 교양 초과 학점
+        double totalCredit = graduate.getTotalCredit();
+        double kyCredit = graduate.getKyCredit();
+        double exceed = 0; // 교양 초과 학점
 
         // 해당 학번 과목 교양 학점 범위 (17~22학번 : 35~49학점, 23학번 : 35~45학점)
         int kyMaxCredit = 49;
@@ -412,7 +412,7 @@ public class GraduateService {
         StringBuilder failure = new StringBuilder();
         String addString;
 
-        int majorCredit = graduate.getMajorCredit();
+        double majorCredit = graduate.getMajorCredit();
         List<String> userRequiredMajorList = graduate.getRequiredMajorList();
 
         // 학과 정보 가져오기
@@ -447,8 +447,8 @@ public class GraduateService {
         StringBuilder failure = new StringBuilder();
         String addString;
 
-        int majorCredit = graduate.getMajorCredit();
-        int doubleMajorCredit = graduate.getDoubleMajorCredit();
+        double majorCredit = graduate.getMajorCredit();
+        double doubleMajorCredit = graduate.getDoubleMajorCredit();
         List<String> userRequiredMajorList = graduate.getRequiredMajorList();
 
         // 학과 정보 가져오기
@@ -663,7 +663,7 @@ public class GraduateService {
      * 부전공 검사
      */
     private String checkSubMajor(Graduate graduate) {
-        int subMajorCredit = graduate.getSubMajorCredit();
+        double subMajorCredit = graduate.getSubMajorCredit();
 
         if (subMajorCredit < 21) {
             return "부전공학점 " + (21 - subMajorCredit) + "학점 미달\n";

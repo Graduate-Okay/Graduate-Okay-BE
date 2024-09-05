@@ -25,19 +25,19 @@ public class Graduate {
     boolean isDoubleMajor = false; // 복수전공 여부
 
     @Builder.Default
-    int totalCredit = 0; // 총 취득 학점
+    double totalCredit = 0; // 총 취득 학점
 
     @Builder.Default
-    int kyCredit = 0; // 교양 학점
+    double kyCredit = 0; // 교양 학점
 
     @Builder.Default
-    int majorCredit = 0; // 전공 학점
+    double majorCredit = 0; // 전공 학점
 
     @Builder.Default
-    int doubleMajorCredit = 0; // 복수 전공 학점
+    double doubleMajorCredit = 0; // 복수 전공 학점
 
     @Builder.Default
-    int subMajorCredit = 0; // 부전공 학점
+    double subMajorCredit = 0; // 부전공 학점
 
     @Builder.Default
     int nonSubject = 0; // 비교과 이수 학기
